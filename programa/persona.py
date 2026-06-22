@@ -19,7 +19,7 @@ class Persona:
         #S: No retorna nada, imprime en consola
         #R: El objeto debe estar correctamente inicializado
         """
-        print(f"Nombre: {self.__nombre}, Apellido: {self.__apellido}, Fecha de Nacimiento: {self.__fecha_nacimiento}, Nacionalidad: {self.__nacionalidad}")
+        return f"Nombre: {self.__nombre}, Apellido: {self.__apellido}, Fecha de Nacimiento: {self.__fecha_nacimiento}, Nacionalidad: {self.__nacionalidad}"    
     
     def get_nombre(self):
         """
