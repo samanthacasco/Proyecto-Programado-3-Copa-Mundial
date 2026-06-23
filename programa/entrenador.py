@@ -22,9 +22,8 @@ class Entrenador(Persona):
         #S: No retorna nada, imprime en consola
         #R: El objeto debe estar correctamente inicializado
         """
-        def mostrar_datos(self):
-            datos_persona = super().mostrar_datos()
-            return f"{datos_persona}\nLicencia: {self.__licencia}, Años de Experiencia: {self.__experiencia_anios}, Sistema de juego: {self.__sistema_juego}"
+        datos_persona = super().mostrar_datos()
+        return f"{datos_persona}\nLicencia: {self.__licencia}, Años de Experiencia: {self.__experiencia_anios}, Sistema de juego: {self.__sistema_juego}"
     
     def actualizar_datos(self, licencia, experiencia_anios, sistema_juego):
         """
