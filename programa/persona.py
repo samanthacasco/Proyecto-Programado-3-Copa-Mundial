@@ -16,7 +16,7 @@ class Persona:
         """
         Muestra la información básica de la persona.
         #E: No recibe parámetros
-        #S: No retorna nada, imprime en consola
+        #S: Retorna un str con la información de la persona
         #R: El objeto debe estar correctamente inicializado
         """
         return f"Nombre: {self.__nombre}, Apellido: {self.__apellido}, Fecha de Nacimiento: {self.__fecha_nacimiento}, Nacionalidad: {self.__nacionalidad}"    
