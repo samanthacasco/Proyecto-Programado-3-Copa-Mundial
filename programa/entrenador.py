@@ -19,7 +19,7 @@ class Entrenador(Persona):
         """
         Muestra la información básica del entrenador.
         #E: No recibe parámetros
-        #S: No retorna nada, imprime en consola
+        #S: Retorna un str con la información del entrenador
         #R: El objeto debe estar correctamente inicializado
         """
         datos_persona = super().mostrar_datos()
