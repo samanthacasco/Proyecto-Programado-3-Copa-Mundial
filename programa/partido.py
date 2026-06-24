@@ -1,13 +1,13 @@
 import random 
 
 class Partido:
-    """
-    Constructor que inicializa los atributos de la clase Prtido
-    #E: id:partido (int), equipo_1 (Seleccion), equipo_2 (Seleccion), fase(str), fecha(str)
-    #S: No retorna nada
-    #R: equipo_1 y equipo_2 deben se selecciones
-    """
     def __init__(self, id_partido, equipo_1, equipo_2, fase, fecha):
+        """
+        Constructor que inicializa los atributos de la clase Partido
+        #E: id_partido (int), equipo_1 (Seleccion), equipo_2 (Seleccion), fase(str), fecha(str)
+        #S: No retorna nada
+        #R: equipo_1 y equipo_2 deben ser selecciones
+        """
         self.__id_partido = id_partido 
         self.__equipo_1 = equipo_1
         self.__equipo_2 = equipo_2
@@ -52,8 +52,8 @@ class Partido:
                 self.__goles_equipo2 =  random.randint(2, 6)
         
         # Registrar resultados de las estadisticas de cada seccion 
-        self.__equipo_1.resitrar_resultado(self.__goles_equipo1, self.__goles_equipo2, 0, 0)
-        self.__equipo_2.resitrar_resultado(self.__goles_equipo2, self.__goles_equipo2, 0, 0)
+        self.__equipo_1.registrar_resultado(self.__goles_equipo1, self.__goles_equipo2, 0, 0)
+        self.__equipo_2.registrar_resultado(self.__goles_equipo2, self.__goles_equipo1, 0, 0)
 
 
     def generar_ganador(self):
