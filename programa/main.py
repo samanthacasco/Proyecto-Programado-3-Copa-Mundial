@@ -8,6 +8,12 @@ centrar_ventana(ventana, 800, 600)
 lista_paises = []
 
 def mostrar_menu():
+    """
+    Muestra el menu principal del programa
+    #E:No recibe parámetros
+    #S: No retorna nada, dibuja los widgets en la ventana
+    #R: La ventana debe estar inicializada correctamente
+    """
     limpiar_ventana(ventana)
     
     titulo = tk.Label(ventana, text="Mundial FIFA 2026", font=("Arial", 24))
