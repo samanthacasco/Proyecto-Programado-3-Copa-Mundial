@@ -1,13 +1,24 @@
 from partido import Partido
 
 class Grupo:
-    
     def __init__(self, nombre_grupo):
+        """
+        Constructor que inicializa los atributos de la clase Grupo.
+        #E: nombre_grupo (str)
+        #S: No retorna nada
+        #R: El nombre del grupo debe ser un str no vacío
+        """
         self.__nombre_grupo = nombre_grupo
         self.__equipos = []
         self.__partidos = []
 
     def agregar_equipo(self, seleccion):
+        """
+        Agrega una selección al grupo.
+        #E: seleccion (Seleccion)
+        #S: Retorna True si la selección se agrega correctamente, False en caso contrario
+        #R: El grupo no puede tener más de 4 equipos
+        """
         cantidad = len(self.__equipos)
         if cantidad < 4:
             self.__equipos.append(seleccion)
@@ -42,8 +53,8 @@ class Grupo:
         #R: Los partidos del grupo deben haber sido simulados previamente
         """
 
-         # Crear la tabla inicial con todos los equipos en cero
-    #   [equipo, puntos, goles_favor, goles_contra, diferencia]
+        # Crear la tabla inicial con todos los equipos en cero
+        #[equipo, puntos, goles_favor, goles_contra, diferencia]
         tabla = [ ]
         for equipo in self.__equipos:
             tabla.append([equipo, 0, 0, 0, 0])
