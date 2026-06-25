@@ -206,7 +206,7 @@ class Mundial:
         guardar_selecciones(self.__selecciones)
         guardar_partidos(partidos)
         guardar_ranking_goleadores(jugadores)
-        guardar_ranking_selecciones(self.__selecciones)
+        guardar_ranking_selecciones(self)
     
     def get_nombre(self):
         """
