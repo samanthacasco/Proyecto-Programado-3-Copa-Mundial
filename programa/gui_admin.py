@@ -3,7 +3,8 @@ from tkinter import messagebox
 from utilidades import centrar_ventana, limpiar_ventana
 from pais import Pais
 from seleccion import Seleccion
-    
+from entrenador import Entrenador
+  
 def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
     """
     Muestra el formulario para registrar países y el listado de países registrados.
@@ -160,3 +161,128 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
     btn_volver = tk.Button(ventana, text="Volver", 
                        command=lambda: mostrar_admin_paises_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu))
     btn_volver.pack(pady=10)
+
+def mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, mostrar_menu):
+    """
+    Muestra el submenú de administración de entrenadores y jugadores.
+    #E: ventana (tk.Tk), lista_entrenadores (list), lista_jugadores (list), mostrar_menu (function)
+    #S: No retorna nada, dibuja los widgets en la ventana
+    #R: La ventana debe estar inicializada correctamente
+    """
+    limpiar_ventana(ventana)
+    
+    tk.Label(ventana, text="Administrar Entrenadores y Jugadores", font=("Arial", 16)).pack(pady=20)
+    
+    btn_entrenador = tk.Button(ventana, text="Registrar Entrenador",
+                           command=lambda: mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))
+    btn_entrenador.pack(pady=10)
+    
+    btn_jugador = tk.Button(ventana, text="Registrar Jugador",
+        command=lambda: mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))    
+    btn_jugador.pack(pady=10)
+        
+    btn_volver = tk.Button(ventana, text="Volver al Menú", command=mostrar_menu)
+    btn_volver.pack(pady=10)
+
+def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu):
+    """
+    Muestra el formulario para registrar un entrenador y el listado de selecciones registradas.
+    #E: ventana (tk.Tk), lista_entrenadores (list), mostrar_menu (function), lista_jugadores (list)
+    #S: No retorna nada, dibuja los widgets en la ventana
+    #R: La ventana debe estar inicializada correctamente
+    """
+    limpiar_ventana(ventana)
+    
+    tk.Label(ventana, text="Registrar Entrenador", font=("Arial", 16)).pack(pady=20) 
+    
+    tk.Label(ventana, text="Nombre:").pack()
+    entry_nombre_entrenador = tk.Entry(ventana)
+    entry_nombre_entrenador.pack()
+    
+    tk.Label(ventana, text="Apellido:").pack()
+    entry_apellido_entrenador = tk.Entry(ventana)
+    entry_apellido_entrenador.pack()
+    
+    tk.Label(ventana, text="Fecha nacimiento:").pack()
+    entry_fecha_naci_entrenador = tk.Entry(ventana)
+    entry_fecha_naci_entrenador.pack()
+    
+    tk.Label(ventana, text="Nacionalidad:").pack()
+    entry_nacionalidad_entrenador = tk.Entry(ventana)
+    entry_nacionalidad_entrenador.pack()
+    
+    tk.Label(ventana, text="Licencia:").pack()
+    entry_licencia_entrenador = tk.Entry(ventana)
+    entry_licencia_entrenador.pack()
+    
+    tk.Label(ventana, text="Años de experiencia:").pack()
+    entry_anios_exp_entrenador = tk.Entry(ventana)
+    entry_anios_exp_entrenador.pack()
+    
+    tk.Label(ventana, text="Sistema de juego:").pack()
+    entry_sistema_juego_entrenador = tk.Entry(ventana)
+    entry_sistema_juego_entrenador.pack()
+
+
+    tk.Label(ventana, text="Selecciona una seleccion:").pack()
+    
+    listbox_seleccion = tk.Listbox(ventana, width=50, height=6)
+    
+    for seleccion in lista_selecciones:       
+        listbox_seleccion.insert(tk.END, seleccion.get_codigo_equipo())
+    listbox_seleccion.pack(pady=5)
+    
+    def registrar_entrenador():
+        """
+        Registra un entrenador nuevo con sus atributos
+        #E: No recibe parámetros, lee los valores de los campos Entry
+        #S: No retorna nada, agrega el objeto Entrenador a lista_entrenadores y actualiza el listbox
+        #R: La ventana debe estar inicializada correctamente
+        """
+        nombre = entry_nombre_entrenador.get()
+        apellido = entry_apellido_entrenador.get()
+        fecha_nacimiento = entry_fecha_naci_entrenador.get()
+        nacionalidad = entry_nacionalidad_entrenador.get()
+        licencia = entry_licencia_entrenador.get()
+        anios_exp = entry_anios_exp_entrenador.get()
+        sistema_juego = entry_sistema_juego_entrenador.get()
+        
+        seleccion = listbox_seleccion.curselection()
+        
+        if nombre == "" or apellido == "" or fecha_nacimiento == "" or nacionalidad == "" or licencia == "" or anios_exp == "" or sistema_juego == "":
+            messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+        
+        if not anios_exp.isdigit():
+            messagebox.showerror("Error", "Los años de experiencia debe ser un número entero positivo")
+            return
+        
+        nuevo_entrenador = Entrenador(nombre, apellido, fecha_nacimiento, nacionalidad, licencia, int(anios_exp), sistema_juego)
+        if seleccion:
+            seleccion_elegida = lista_selecciones[seleccion[0]]
+            seleccion_elegida.asignar_entrenador(nuevo_entrenador)
+            
+        lista_entrenadores.append(nuevo_entrenador)
+        messagebox.showinfo("Éxito", f"Entrenador {nombre} registrado correctamente")
+        listbox_entrenadores.insert(tk.END, f"{nombre} - {apellido} - {fecha_nacimiento} - Nacionalidad: {nacionalidad} - Licencia: {licencia} - Años de experiencia: {anios_exp} - Sistema de juego: {sistema_juego}")
+
+        entry_nombre_entrenador.delete(0, tk.END)
+        entry_apellido_entrenador.delete(0, tk.END)
+        entry_fecha_naci_entrenador.delete(0, tk.END)
+        entry_nacionalidad_entrenador.delete(0, tk.END)
+        entry_licencia_entrenador.delete(0, tk.END)
+        entry_anios_exp_entrenador.delete(0, tk.END)
+        entry_sistema_juego_entrenador.delete(0, tk.END)
+    
+    btn_registrar = tk.Button(ventana, text="Registrar Entrenador", command=registrar_entrenador)
+    btn_registrar.pack(pady=10)
+    
+    tk.Label(ventana, text="Entrenadores registrados:").pack()
+    listbox_entrenadores = tk.Listbox(ventana, width=50, height=8)
+    listbox_entrenadores.pack(pady=5)
+    
+    btn_volver = tk.Button(ventana, text="Volver", 
+                       command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))
+    btn_volver.pack(pady=10)
+        
+        
