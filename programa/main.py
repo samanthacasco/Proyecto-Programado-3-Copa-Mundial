@@ -27,7 +27,7 @@ def mostrar_menu():
     btn_paises.pack(pady=10)
     
     btn_jugadores = tk.Button(ventana, text="Administrar Entrenadores y Jugadores", 
-                              command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))
+                              command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu))
     btn_jugadores.pack(pady=10)
 
     btn_configurar = tk.Button(ventana, text="Configurar Mundial")
