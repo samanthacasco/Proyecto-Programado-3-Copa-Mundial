@@ -67,7 +67,7 @@ class Partido:
         #R: La selección debe tener jugadores registrados y la cantidad de goles debe ser mayor o igual a 0
         """
 
-        jugadores = seleccion.get__jugadores()
+        jugadores = seleccion.get_jugadores()
 
         for i in range(cantidad_goles):
             jugador = random.choice(jugadores)
