@@ -5,7 +5,8 @@ from pais import Pais
 from seleccion import Seleccion
 from entrenador import Entrenador
 from futbolista import Futbolista
- 
+from persistencia import guardar_paises, guardar_selecciones, guardar_jugadores
+
 def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
     """
     Muestra el formulario para registrar países y el listado de países registrados.
@@ -55,6 +56,8 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
     
         nuevo_pais = Pais(codigo, nombre, continente, int(ranking))
         lista_paises.append(nuevo_pais)
+        guardar_paises(lista_paises)
+        
         messagebox.showinfo("Éxito", f"País {nombre} registrado correctamente")
         listbox_paises.insert(tk.END, f"{codigo} - {nombre} - {continente} - Ranking: {ranking}")
 
@@ -138,10 +141,9 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
             return
         
         pais_elegido = lista_paises[seleccion[0]]
-        
         nueva_seleccion = Seleccion(codigo, pais_elegido, None)
-        
         lista_selecciones.append(nueva_seleccion)
+        guardar_selecciones(lista_selecciones)
         
         listbox_seleccion.insert(tk.END, f"{codigo} - {pais_elegido.get_nombre()}")
         messagebox.showinfo("Éxito", f"Selección {codigo} registrada correctamente")
@@ -264,6 +266,7 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
             seleccion_elegida.asignar_entrenador(nuevo_entrenador)
             
         lista_entrenadores.append(nuevo_entrenador)
+        
         messagebox.showinfo("Éxito", f"Entrenador {nombre} registrado correctamente")
         listbox_entrenadores.insert(tk.END, f"{nombre} - {apellido} - {fecha_nacimiento} - Nacionalidad: {nacionalidad} - Licencia: {licencia} - Años de experiencia: {anios_exp} - Sistema de juego: {sistema_juego}")
 
@@ -377,6 +380,8 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
             seleccion_elegida.agregar_jugador(nuevo_jugador)
             
         lista_jugadores.append(nuevo_jugador)
+        guardar_jugadores(lista_jugadores)
+        
         messagebox.showinfo("Éxito", f"Jugador {nombre} registrado correctamente")
         listbox_jugadores.insert(tk.END, f"{nombre} - {apellido} - {fecha_nacimiento} - Nacionalidad: {nacionalidad} - Dorsal: {dorsal} - Posicion: {posicion} - Puntaje Individual: {puntaje}")
 
