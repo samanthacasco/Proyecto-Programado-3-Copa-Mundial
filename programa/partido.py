@@ -55,7 +55,24 @@ class Partido:
         self.__equipo_1.registrar_resultado(self.__goles_equipo1, self.__goles_equipo2, 0, 0)
         self.__equipo_2.registrar_resultado(self.__goles_equipo2, self.__goles_equipo1, 0, 0)
 
+        # Registrar goles a jugadores
+        self.registrar_goles_jugadores(self.__equipo_1, self.__goles_equipo1)
+        self.registrar_goles_jugadores(self.__equipo_2, self.__goles_equipo2)
+    
+    def registrar_goles_jugadores(self, seleccion, cantidad_goles):
+        """
+        Registra los goles anotados por los futbolistas de una selección
+        #E: seleccion (Seleccion), cantidad_goles (int)
+        #S: No retorna nada, actualiza los goles de los futbolistas
+        #R: La selección debe tener jugadores registrados y la cantidad de goles debe ser mayor o igual a 0
+        """
 
+        jugadores = seleccion.get__jugadores()
+
+        for i in range(cantidad_goles):
+            jugador = random.choice(jugadores)
+            jugador.registrar_gol()
+        
     def generar_ganador(self):
         """
         Determina el ganador del partido según la cantidad de goles anotados.
