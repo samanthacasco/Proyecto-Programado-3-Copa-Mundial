@@ -4,7 +4,8 @@ from utilidades import centrar_ventana, limpiar_ventana
 from pais import Pais
 from seleccion import Seleccion
 from entrenador import Entrenador
-  
+from futbolista import Futbolista
+ 
 def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
     """
     Muestra el formulario para registrar países y el listado de países registrados.
@@ -162,7 +163,7 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
                        command=lambda: mostrar_admin_paises_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu))
     btn_volver.pack(pady=10)
 
-def mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, mostrar_menu):
+def mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu):
     """
     Muestra el submenú de administración de entrenadores y jugadores.
     #E: ventana (tk.Tk), lista_entrenadores (list), lista_jugadores (list), mostrar_menu (function)
@@ -174,11 +175,11 @@ def mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_juga
     tk.Label(ventana, text="Administrar Entrenadores y Jugadores", font=("Arial", 16)).pack(pady=20)
     
     btn_entrenador = tk.Button(ventana, text="Registrar Entrenador",
-                           command=lambda: mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))
+                           command=lambda: mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selecciones,  mostrar_menu))
     btn_entrenador.pack(pady=10)
     
     btn_jugador = tk.Button(ventana, text="Registrar Jugador",
-        command=lambda: mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))    
+        command=lambda: mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu))    
     btn_jugador.pack(pady=10)
         
     btn_volver = tk.Button(ventana, text="Volver al Menú", command=mostrar_menu)
@@ -282,7 +283,118 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
     listbox_entrenadores.pack(pady=5)
     
     btn_volver = tk.Button(ventana, text="Volver", 
-                       command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))
+                       command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu))
     btn_volver.pack(pady=10)
         
+def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu):
+    """
+    Muestra el formulario para registrar un jugador y el listado de selecciones registradas.
+    #E: ventana (tk.Tk), lista_entrenadores (list), mostrar_menu (function), lista_jugadores (list), lista_seleccion(list)
+    #S: No retorna nada, dibuja los widgets en la ventana
+    #R: La ventana debe estar inicializada correctamente
+    """
+    limpiar_ventana(ventana)
+    
+    tk.Label(ventana, text="Registrar Jugador", font=("Arial", 16)).pack(pady=20) 
+    
+    tk.Label(ventana, text="Nombre:").pack()
+    entry_nombre_jugador = tk.Entry(ventana)
+    entry_nombre_jugador.pack()
+    
+    tk.Label(ventana, text="Apellido:").pack()
+    entry_apellido_jugador = tk.Entry(ventana)
+    entry_apellido_jugador.pack()
+    
+    tk.Label(ventana, text="Fecha nacimiento:").pack()
+    entry_fecha_naci_jugador = tk.Entry(ventana)
+    entry_fecha_naci_jugador.pack()
+    
+    tk.Label(ventana, text="Nacionalidad:").pack()
+    entry_nacionalidad_jugador = tk.Entry(ventana)
+    entry_nacionalidad_jugador.pack()
+    
+    tk.Label(ventana, text="Dorsal:").pack()
+    entry_dorsal_jugador = tk.Entry(ventana)
+    entry_dorsal_jugador.pack()
+    
+    tk.Label(ventana, text="Posicion:").pack()
+    entry_posicion_jugador = tk.Entry(ventana)
+    entry_posicion_jugador.pack()
+    
+    tk.Label(ventana, text="Puntaje individual:").pack()
+    entry_puntaje_jugador = tk.Entry(ventana)
+    entry_puntaje_jugador.pack()
+
+
+    tk.Label(ventana, text="Selecciona una seleccion:").pack()
+    
+    listbox_seleccion = tk.Listbox(ventana, width=50, height=6)
+    
+    for seleccion in lista_selecciones:       
+        listbox_seleccion.insert(tk.END, seleccion.get_codigo_equipo())
+    listbox_seleccion.pack(pady=5)
+    
+    def registrar_jugador():
+        """
+        Registra un jugador nuevo con sus atributos
+        #E: No recibe parámetros, lee los valores de los campos Entry
+        #S: No retorna nada, agrega el objeto Futbolista a lista_jugadores y actualiza el listbox
+        #R: La ventana debe estar inicializada correctamente
+        """
+        nombre = entry_nombre_jugador.get()
+        apellido = entry_apellido_jugador.get()
+        fecha_nacimiento = entry_fecha_naci_jugador.get()
+        nacionalidad = entry_nacionalidad_jugador.get()
+        dorsal = entry_dorsal_jugador.get()
+        posicion = entry_posicion_jugador.get()
+        puntaje = entry_puntaje_jugador.get()
         
+        seleccion = listbox_seleccion.curselection()
+        
+        if nombre == "" or apellido == "" or fecha_nacimiento == "" or nacionalidad == "" or dorsal == "" or posicion == "" or puntaje == "":
+            messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+        
+        if not dorsal.isdigit():
+            messagebox.showerror("Error", "El dorsal debe ser un número entero positivo")
+            return
+        dorsal_num = int(dorsal)
+        if dorsal_num < 1 or dorsal_num > 99:
+            messagebox.showerror("Error", "El dorsal debe ser un número entre 1 y 99")
+            return
+        
+        if not puntaje.isdigit():
+            messagebox.showerror("Error", "El puntaje debe ser un número entero positivo")
+            return
+        puntaje_num = int(puntaje)
+        if puntaje_num < 1 or puntaje_num > 100:
+            messagebox.showerror("Error", "El puntaje debe ser un número entre 1 y 100")
+            return
+        
+        nuevo_jugador = Futbolista(nombre, apellido, fecha_nacimiento, nacionalidad, dorsal_num, posicion, puntaje_num)
+        if seleccion:
+            seleccion_elegida = lista_selecciones[seleccion[0]]
+            seleccion_elegida.agregar_jugador(nuevo_jugador)
+            
+        lista_jugadores.append(nuevo_jugador)
+        messagebox.showinfo("Éxito", f"Jugador {nombre} registrado correctamente")
+        listbox_jugadores.insert(tk.END, f"{nombre} - {apellido} - {fecha_nacimiento} - Nacionalidad: {nacionalidad} - Dorsal: {dorsal} - Posicion: {posicion} - Puntaje Individual: {puntaje}")
+
+        entry_nombre_jugador.delete(0, tk.END)
+        entry_apellido_jugador.delete(0, tk.END)
+        entry_fecha_naci_jugador.delete(0, tk.END)
+        entry_nacionalidad_jugador.delete(0, tk.END)
+        entry_dorsal_jugador.delete(0, tk.END)
+        entry_posicion_jugador.delete(0, tk.END)
+        entry_puntaje_jugador.delete(0, tk.END)
+    
+    btn_registrar = tk.Button(ventana, text="Registrar Jugador", command=registrar_jugador)
+    btn_registrar.pack(pady=10)
+    
+    tk.Label(ventana, text="Jugadores registrados:").pack()
+    listbox_jugadores = tk.Listbox(ventana, width=50, height=8)
+    listbox_jugadores.pack(pady=5)
+    
+    btn_volver = tk.Button(ventana, text="Volver", 
+                       command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu))
+    btn_volver.pack(pady=10)
