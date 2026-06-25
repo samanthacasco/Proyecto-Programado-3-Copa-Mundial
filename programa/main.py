@@ -1,12 +1,14 @@
 import tkinter as tk
 from utilidades import centrar_ventana, limpiar_ventana
-from gui_admin import mostrar_admin_paises_selecciones
+from gui_admin import mostrar_admin_paises_selecciones, mostrar_admin_entrenadores_jugadores
 
 ventana = tk.Tk()
 ventana.title("Mundial FIFA 2026")
 centrar_ventana(ventana, 800, 600)
 lista_paises = []
 lista_selecciones = []
+lista_entrenadores = []
+lista_jugadores = []
 
 def mostrar_menu():
     """
@@ -24,7 +26,8 @@ def mostrar_menu():
                        command=lambda: mostrar_admin_paises_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu))
     btn_paises.pack(pady=10)
     
-    btn_jugadores = tk.Button(ventana, text="Administrar Entrenadores y Jugadores")
+    btn_jugadores = tk.Button(ventana, text="Administrar Entrenadores y Jugadores", 
+                              command=lambda: mostrar_admin_entrenadores_jugadores(ventana, lista_entrenadores, lista_jugadores, mostrar_menu))
     btn_jugadores.pack(pady=10)
 
     btn_configurar = tk.Button(ventana, text="Configurar Mundial")
