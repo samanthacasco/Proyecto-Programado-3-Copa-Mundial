@@ -193,13 +193,19 @@ class Mundial:
         #S: No retorna nada, guarda la información del mundial en archivos txt
         #R: El mundial debe tener información registrada previamente
         """
-        from persistencia import guardar_paises, guardar_selecciones, guardar_partidos
+        from persistencia import guardar_paises, guardar_selecciones, guardar_partidos, guardar_ranking_goleadores
 
         partidos = self.obtener_todos_los_partidos()
+
+        jugadores = [ ]
+        for seleccion in self.__selecciones:
+            for jugador in seleccion.get_jugadores():
+                jugadores.apppend(jugador)
 
         guardar_paises(self.__paises)
         guardar_selecciones(self.__selecciones)
         guardar_partidos(partidos)
+        guardar_ranking_goleadores(jugadores)
     
     def get_nombre(self):
         """
@@ -270,6 +276,3 @@ class Mundial:
         """
         return self.__campeon
             
-"""
-Creacion de la clase mundial con sus metodos y gtters
-"""
