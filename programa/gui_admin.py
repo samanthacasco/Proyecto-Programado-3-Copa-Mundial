@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import messagebox
-from utilidades import centrar_ventana, limpiar_ventana
+from utilidades import centrar_ventana, limpiar_ventana, validar_fecha
 from pais import Pais
 from seleccion import Seleccion
 from entrenador import Entrenador
@@ -256,6 +256,10 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
             messagebox.showerror("Error", "Todos los campos son obligatorios")
             return
         
+        if not validar_fecha(fecha_nacimiento):
+            messagebox.showerror("Error", "La fecha debe tener el formato DD/MM/AAAA")
+            return
+
         if not anios_exp.isdigit():
             messagebox.showerror("Error", "Los años de experiencia debe ser un número entero positivo")
             return
@@ -356,6 +360,10 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         
         if nombre == "" or apellido == "" or fecha_nacimiento == "" or nacionalidad == "" or dorsal == "" or posicion == "" or puntaje == "":
             messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+        
+        if not validar_fecha(fecha_nacimiento):
+            messagebox.showerror("Error", "La fecha debe tener el formato DD/MM/AAAA")
             return
         
         if not dorsal.isdigit():
