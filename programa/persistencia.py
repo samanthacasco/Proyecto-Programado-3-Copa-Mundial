@@ -82,7 +82,7 @@ def guardar_jugadores(lista_jugadores):
     """
     with open("jugadores.txt", "w", encoding="utf-8") as archivo:
         for jugador in lista_jugadores:
-            archivo.write(f"{jugador.get_nombre()}|{jugador.get_apellido()}|{jugador.get_fecha_nacimiento()}|{jugador.get_nacionalidad()}|{jugador.get_dorsal()}|{jugador.get_posicion()}|{jugador.get_puntaje_individual()}|{jugador.get_goles()}|{jugador.get_asistencias()}|{jugador.get_total_tarjetas_amarillas()}|{jugador.get_total_tarjetas_rojas()} \n")
+            archivo.write(f"{jugador.get_nombre()}|{jugador.get_apellido()}|{jugador.get_fecha_nacimiento()}|{jugador.get_nacionalidad()}|{jugador.get_dorsal()}|{jugador.get_posicion()}|{jugador.get_puntaje_individual()}|{jugador.get_goles()}|{jugador.get_asistencias()}|{jugador.get_total_tarjetas_amarillas()}|{jugador.get_total_tarjetas_rojas()}\n")
 
 def cargar_jugadores():
     """
@@ -133,3 +133,54 @@ def cargar_partidos():
     except FileNotFoundError:
         pass
     return partidos
+
+def guardar_ranking_goleadores(lista_jugadores):
+    """
+    Guarda el ranking de goleadores ordenado de mayor a menor en ranking_goleadores.txt
+    #E: lista_jugadores (list)
+    #S: No retorna nada, escribe el ranking en el archivo ranking_goleadores.txt
+    #R: lista_jugadores debe contener objetos Futbolista válidos
+    """
+    copia = lista_jugadores[:]
+    for i in range(len(copia)):
+        for j in range(len(copia) - 1):
+            actual = j
+            siguiente = j+1
+            if copia[actual].get_goles() < copia[siguiente].get_goles():
+                copia[actual], copia[siguiente] = copia[siguiente], copia[actual]
+    
+    with open("ranking_goleadores.txt", "w", encoding="utf-8") as archivo:
+        for jugador in copia:
+            archivo.write(f"{jugador.get_nombre()}|{jugador.get_apellido()}|{jugador.get_goles()}\n")
+            
+def guardar_ranking_selecciones(mundial):
+    """
+    Guarda el ranking de selecciones ordenado por puntos en ranking_selecciones.txt
+    #E: mundial (Mundial)
+    #S: No retorna nada, escribe el ranking en el archivo ranking_selecciones.txt
+    #R: El mundial debe tener grupos con partidos simulados
+    """
+    datos_selecciones = []
+    
+    for grupo in mundial.get_grupos():
+        tabla = grupo.calcular_tabla()
+        for fila in tabla:
+            seleccion = fila[0]
+            puntos = fila[1]
+            goles_favor = fila[2]
+            goles_contra = fila[3]
+            datos_selecciones.append([seleccion, puntos, goles_favor, goles_contra])
+    
+    # ordenar por puntos de mayor a menor
+    for i in range(len(datos_selecciones)):
+        for j in range(len(datos_selecciones) - 1):
+            equipo_actual = j
+            equipo_siguiente = j+1 
+            pos_puntos = 1
+            if datos_selecciones[equipo_actual][pos_puntos] < datos_selecciones[equipo_siguiente][pos_puntos]:
+                datos_selecciones[equipo_actual], datos_selecciones[equipo_siguiente] = datos_selecciones[equipo_siguiente], datos_selecciones[equipo_actual]
+    
+    with open("ranking_selecciones.txt", "w", encoding="utf-8") as archivo:
+        for dato in datos_selecciones:
+            nombre = dato[0].get_pais().get_nombre()
+            archivo.write(f"{nombre}|{dato[1]}|{dato[2]}|{dato[3]}\n")
