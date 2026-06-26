@@ -2,6 +2,7 @@ import tkinter as tk
 from utilidades import centrar_ventana, limpiar_ventana
 from gui_admin import mostrar_admin_paises_selecciones, mostrar_admin_entrenadores_jugadores
 from mundial import Mundial
+from gui_mundial import mostrar_configurar_mundial, mostrar_jugar_mundial, mostrar_estadisticas
 
 # Estilos
 FONDO_OSCURO = "#0a1628"
@@ -67,7 +68,7 @@ def mostrar_menu():
                            font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
                            activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
                            relief="flat", padx=20, pady=10, cursor="hand2",
-                                    command=lambda: mostrar_estadisticas(ventana, lista_jugadores, lista_selecciones, mostrar_menu))
+                                    command=lambda: mostrar_estadisticas(ventana, mundial, mostrar_menu))
     btn_estadisticas.pack(pady=5, fill="x", padx=40)
     
     btn_salir = tk.Button(ventana, text="Salir",
@@ -75,7 +76,6 @@ def mostrar_menu():
                            activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
                            relief="flat", padx=20, pady=10, cursor="hand2", command=ventana.destroy)
     btn_salir.pack(pady=5, fill="x", padx=40)
-
 
 
 mostrar_menu()
