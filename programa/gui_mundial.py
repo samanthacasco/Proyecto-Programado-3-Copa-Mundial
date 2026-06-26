@@ -65,8 +65,9 @@ def mostrar_configurar_mundial(ventana, lista_selecciones, mundial, mostrar_menu
                 messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} no tiene entrenador asignado")
                 return
             
-        for seleccion in lista_selecciones:
-            mundial.registrar_seleccion(seleccion)
+        if len(mundial.get_selecciones()) == 0: 
+            for seleccion in lista_selecciones:
+                mundial.registrar_seleccion(seleccion)
  
         creado = mundial.crear_grupos(cantidad_grupos)
 
@@ -104,7 +105,9 @@ def mostrar_jugar_mundial(ventana, mundial, mostrar_menu):
 
     tk.Label(ventana, text="▶️ Jugar Mundial",font=FUENTE_TITULO, bg=FONDO_OSCURO,  fg=DORADO).pack(pady=20)
 
-    resultado_texto = tk.Text(ventana,width=65, height=22, bg=FONDO_CARD,fg=TEXTO_BLANCO, font=("Arial", 10))
+    resultado_texto = tk.Text(ventana, width=65, height=22, bg=FONDO_CARD,
+                          fg=TEXTO_BLANCO, font=("Arial", 10),
+                          state="disabled") 
     resultado_texto.pack(pady=10)
 
     def simular_grupos():
@@ -114,9 +117,11 @@ def mostrar_jugar_mundial(ventana, mundial, mostrar_menu):
 
         mundial.jugar_fase_grupos()
 
+        resultado_texto.config(state="normal")  
         resultado_texto.delete("1.0", tk.END)
         resultado_texto.insert(tk.END, "TABLAS DE GRUPOS\n\n")
         resultado_texto.insert(tk.END, mundial.mostrar_tabla_general())
+        resultado_texto.config(state="disabled")
 
         messagebox.showinfo("Éxito", "Fase de grupos simulada correctamente.")
 
@@ -127,14 +132,17 @@ def mostrar_jugar_mundial(ventana, mundial, mostrar_menu):
 
         campeon = mundial.determinar_campeon()
 
+        resultado_texto.config(state="normal")
         resultado_texto.insert(tk.END, "\nFASES ELIMINATORIAS\n\n")
-
-        for fase in mundial.get_fases():
+        
+        for fase in mundial.get_fases():  
+            resultado_texto.insert(tk.END, "\nFASES ELIMINATORIAS\n\n")
             resultado_texto.insert(tk.END, fase.mostrar_juegos())
             resultado_texto.insert(tk.END, "\n")
-
+            
         resultado_texto.insert(tk.END, "\nCAMPEÓN\n")
         resultado_texto.insert(tk.END, campeon.get_pais().get_nombre())
+        resultado_texto.config(state="disabled")
 
         mundial.generar_reporte()
 
@@ -188,6 +196,7 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
             seleccion = dato[1]
 
             if jugador.get_goles() > 0:
+                resultado_texto.config(state="normal") 
                 resultado_texto.insert(
                     tk.END,
                     jugador.get_nombre() + " " + jugador.get_apellido() +
@@ -202,7 +211,7 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
                 seleccion.get_pais().get_nombre() +
                 " | Amarillas: " + str(seleccion.get_total_tarjetas_amarillas()) +
                 " | Rojas: " + str(seleccion.get_total_tarjetas_rojas()) + "\n")
-
+        resultado_texto.config(state="disabled")
     tk.Button(ventana, text="Mostrar estadísticas", font=FUENTE_BOTON, bg=FONDO_CARD,fg=TEXTO_BLANCO,
         command=mostrar_datos).pack(pady=5, fill="x", padx=40)
 
