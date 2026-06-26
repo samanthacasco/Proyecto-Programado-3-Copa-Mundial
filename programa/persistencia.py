@@ -3,6 +3,7 @@ from seleccion import Seleccion
 from persona import Persona
 from futbolista import Futbolista
 from partido import Partido
+from entrenador import Entrenador
 
 def guardar_paises(lista_paises):
     """
@@ -73,34 +74,36 @@ def cargar_selecciones(lista_paises):
         pass
     return selecciones
 
-def guardar_jugadores(lista_jugadores):
+def guardar_jugadores(lista_selecciones):
     """
-    Guarda la lista de jugadores en el archivo jugadores.txt.
-    #E: lista_jugadores (list)
-    #S: No retorna nada, escribe los datos en el archivo jugadores.txt
-    #R: lista_jugadores debe contener objetos Futbolista válidos
+    Guarda los jugadores en jugadores.txt con su selección asociada.
+    #E: lista_jugadores (list), lista_selecciones (list)
+    #S: No retorna nada, escribe los datos en jugadores.txt
+    #R: lista_selecciones debe contener objetos Seleccion válidos con jugadores asignados
     """
     with open("jugadores.txt", "w", encoding="utf-8") as archivo:
-        for jugador in lista_jugadores:
-            archivo.write(f"{jugador.get_nombre()}|{jugador.get_apellido()}|{jugador.get_fecha_nacimiento()}|{jugador.get_nacionalidad()}|{jugador.get_dorsal()}|{jugador.get_posicion()}|{jugador.get_puntaje_individual()}|{jugador.get_goles()}|{jugador.get_asistencias()}|{jugador.get_total_tarjetas_amarillas()}|{jugador.get_total_tarjetas_rojas()}\n")
-
-def cargar_jugadores():
+        for seleccion in lista_selecciones:
+            for jugador in seleccion.get_jugadores():
+                archivo.write(f"{jugador.get_nombre()}|{jugador.get_apellido()}|{jugador.get_fecha_nacimiento()}|{jugador.get_nacionalidad()}|{jugador.get_dorsal()}|{jugador.get_posicion()}|{jugador.get_puntaje_individual()}|{jugador.get_goles()}|{jugador.get_asistencias()}|{jugador.get_total_tarjetas_amarillas()}|{jugador.get_total_tarjetas_rojas()}|{seleccion.get_codigo_equipo()}\n")
+                
+def cargar_jugadores(lista_selecciones):
     """
-    Carga la lista de jugadores del archivo jugadores.txt.  
-    #E: No recibe parametros
-    #S: Retorna la lista con los jugadores
+    Carga los jugadores y los re-asigna a sus selecciones.
+    #E: lista_selecciones (list)
+    #S: No retorna nada, asigna jugadores directamente a cada selección
     #R: El archivo jugadores.txt debe existir y tener el formato correcto
     """
     jugadores = []
     try:
         with open("jugadores.txt", "r", encoding="utf-8") as archivo:
             lineas = archivo.readlines()
-            
         for linea in lineas:
             datos = linea.strip().split("|")
             jugador = Futbolista(datos[0], datos[1], datos[2], datos[3], int(datos[4]), datos[5], int(datos[6]))
-            jugadores.append(jugador)
-            
+            codigo_seleccion = datos[11]
+            for seleccion in lista_selecciones:
+                if seleccion.get_codigo_equipo() == codigo_seleccion:
+                    seleccion.agregar_jugador(jugador)
     except FileNotFoundError:
         pass
     return jugadores
@@ -184,3 +187,39 @@ def guardar_ranking_selecciones(mundial):
         for dato in datos_selecciones:
             nombre = dato[0].get_pais().get_nombre()
             archivo.write(f"{nombre}|{dato[1]}|{dato[2]}|{dato[3]}\n")
+
+def guardar_entrenadores(lista_selecciones):
+    """
+    Guarda los entrenadores asociados a cada selección en entrenadores.txt
+    #E: lista_selecciones (list)
+    #S: No retorna nada, escribe los datos en entrenadores.txt
+    #R: lista_selecciones debe contener objetos Seleccion válidos
+    """
+    with open("entrenadores.txt", "w", encoding="utf-8") as archivo:
+        for seleccion in lista_selecciones:
+            if seleccion.get_entrenador() is not None:
+                e = seleccion.get_entrenador()
+                archivo.write(f"{e.get_nombre()}|{e.get_apellido()}|{e.get_fecha_nacimiento()}|{e.get_nacionalidad()}|{e.get_licencia()}|{e.get_experiencia_anios()}|{e.get_sistema_juego()}|{seleccion.get_codigo_equipo()}\n")
+
+def cargar_entrenadores(lista_selecciones):
+    """
+    Carga los entrenadores y los re-asigna a sus selecciones.
+    #E: lista_selecciones (list)
+    #S: No retorna nada, asigna entrenadores directamente a cada selección
+    #R: El archivo entrenadores.txt debe existir y tener el formato correcto
+    """
+    entrenadores = []
+    try:
+        with open("entrenadores.txt", "r", encoding="utf-8") as archivo:
+            lineas = archivo.readlines()
+        for linea in lineas:
+            datos = linea.strip().split("|")
+            entrenador = Entrenador(datos[0], datos[1], datos[2], datos[3], datos[4], int(datos[5]), datos[6])
+            entrenadores.append(entrenador)  
+            codigo_seleccion = datos[7]
+            for seleccion in lista_selecciones:
+                if seleccion.get_codigo_equipo() == codigo_seleccion:
+                    seleccion.asignar_entrenador(entrenador)
+    except FileNotFoundError:
+        pass
+    return entrenadores
