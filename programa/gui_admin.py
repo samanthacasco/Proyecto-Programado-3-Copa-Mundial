@@ -5,7 +5,8 @@ from pais import Pais
 from seleccion import Seleccion
 from entrenador import Entrenador
 from futbolista import Futbolista
-from persistencia import guardar_paises, guardar_selecciones, guardar_jugadores
+from persistencia import guardar_paises, guardar_selecciones, guardar_jugadores, guardar_entrenadores
+
 
 # Estilos
 FONDO_OSCURO = "#0a1628"
@@ -74,11 +75,20 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
                 messagebox.showerror("Error", f"Ya existe un país con el código {codigo}")
                 return
         
+        if not len(codigo) == 3:
+            messagebox.showerror("Error", "El código FIFA debe tener exactamente 3 letras")
+            return
+
         if not ranking.isdigit():
             messagebox.showerror("Error", "El ranking debe ser un número entero positivo")
             return
+        
+        ranking_num = int(ranking)
+        if ranking_num <= 0:
+            messagebox.showerror("Error", "El ranking debe ser mayor a 0")
+            return
 
-        nuevo_pais = Pais(codigo, nombre, continente, int(ranking))
+        nuevo_pais = Pais(codigo, nombre, continente, ranking_num)
         lista_paises.append(nuevo_pais)
         guardar_paises(lista_paises)
         
@@ -183,17 +193,23 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
         if codigo == "":
             messagebox.showerror("Error", "El código es obligatorio")
             return
-        
-        for s in lista_selecciones:
-            if s.get_codigo_equipo() == codigo:
-                messagebox.showerror("Error", f"Ya existe una selección con el código {codigo}")
-                return
-        
+            
         if not seleccion:
             messagebox.showerror("Error", "Debe seleccionar un país")
             return
         
         pais_elegido = lista_paises[seleccion[0]]
+        
+        for s in lista_selecciones:
+            if s.get_codigo_equipo() == codigo:
+                messagebox.showerror("Error", f"Ya existe una selección con el código {codigo}")
+                return
+            
+        for s in lista_selecciones:
+            if s.get_pais().get_codigo_fifa() == pais_elegido.get_codigo_fifa():
+                messagebox.showerror("Error", f"El país {pais_elegido.get_nombre()} ya tiene una selección registrada")
+                return
+            
         nueva_seleccion = Seleccion(codigo, pais_elegido, None)
         lista_selecciones.append(nueva_seleccion)
         guardar_selecciones(lista_selecciones)
@@ -360,6 +376,8 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
             seleccion_elegida.asignar_entrenador(nuevo_entrenador)
 
         lista_entrenadores.append(nuevo_entrenador)
+        guardar_entrenadores(lista_selecciones)
+        
         messagebox.showinfo("Éxito", f"Entrenador {nombre} registrado correctamente")
         listbox_entrenadores.insert(tk.END, f"{nombre} {apellido} - {licencia} - {anios_exp} años")
 
@@ -378,8 +396,13 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
 
     tk.Label(frame, text="Entrenadores registrados:",
              bg=FONDO_OSCURO, fg=TEXTO_BLANCO, font=FUENTE_LABEL).pack()
+    
     listbox_entrenadores = tk.Listbox(frame, bg=FONDO_CARD, fg=TEXTO_BLANCO,
-                                      font=FUENTE_BOTON, width=50, height=6)
+                                  font=FUENTE_BOTON, width=50, height=6)
+    for seleccion in lista_selecciones:
+        if seleccion.get_entrenador() is not None:
+            e = seleccion.get_entrenador()
+            listbox_entrenadores.insert(tk.END, f"{e.get_nombre()} {e.get_apellido()} - {seleccion.get_codigo_equipo()}")
     listbox_entrenadores.pack(pady=5)
 
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
@@ -502,6 +525,12 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
                 if jugador.get_dorsal() == dorsal_num:
                     messagebox.showerror("Error", f"Ya existe un jugador con el dorsal {dorsal_num} en esa selección")
                     return
+        
+        if seleccion:
+            seleccion_elegida = lista_selecciones[seleccion[0]]
+            if len(seleccion_elegida.get_jugadores()) >= 23:
+                messagebox.showerror("Error", "La selección ya tiene 23 jugadores, que es el máximo permitido")
+                return   
                 
         nuevo_jugador = Futbolista(nombre, apellido, fecha_nacimiento, nacionalidad,
                                    dorsal_num, posicion, puntaje_num)
@@ -510,7 +539,8 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
             seleccion_elegida.agregar_jugador(nuevo_jugador)
 
         lista_jugadores.append(nuevo_jugador)
-        guardar_jugadores(lista_jugadores)
+        guardar_jugadores(lista_selecciones)
+        
         messagebox.showinfo("Éxito", f"Jugador {nombre} registrado correctamente")
         listbox_jugadores.insert(tk.END, f"#{dorsal} {nombre} {apellido} - {posicion}")
 
@@ -531,8 +561,9 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
              bg=FONDO_OSCURO, fg=TEXTO_BLANCO, font=FUENTE_LABEL).pack()
     listbox_jugadores = tk.Listbox(frame, bg=FONDO_CARD, fg=TEXTO_BLANCO,
                                font=FUENTE_BOTON, width=50, height=6)
-    for jugador in lista_jugadores:
-        listbox_jugadores.insert(tk.END, f"#{jugador.get_dorsal()} {jugador.get_nombre()} {jugador.get_apellido()} - {jugador.get_posicion()}")
+    for seleccion in lista_selecciones:
+        for jugador in seleccion.get_jugadores():
+            listbox_jugadores.insert(tk.END, f"#{jugador.get_dorsal()} {jugador.get_nombre()} {jugador.get_apellido()} - {jugador.get_posicion()} ({seleccion.get_codigo_equipo()})")
     listbox_jugadores.pack(pady=5)
 
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
