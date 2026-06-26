@@ -93,6 +93,8 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
     tk.Label(ventana, text="Países registrados:",font=FUENTE_LABEL, bg=FONDO_OSCURO, fg=TEXTO_BLANCO).pack()
     listbox_paises = tk.Listbox(ventana, bg=FONDO_CARD, fg=TEXTO_BLANCO, 
                              font=FUENTE_BOTON, width=50, height=8)
+    for pais in lista_paises:
+        listbox_paises.insert(tk.END, f"{pais.get_codigo_fifa()} - {pais.get_nombre()} - {pais.get_continente()} - Ranking: {pais.get_ranking_fifa()}")
     listbox_paises.pack(pady=15, fill="x", padx=40)
     
     btn_volver = tk.Button(ventana, text="🔙  Volver",font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
@@ -506,7 +508,9 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
     tk.Label(frame, text="Jugadores registrados:",
              bg=FONDO_OSCURO, fg=TEXTO_BLANCO, font=FUENTE_LABEL).pack()
     listbox_jugadores = tk.Listbox(frame, bg=FONDO_CARD, fg=TEXTO_BLANCO,
-                                   font=FUENTE_BOTON, width=50, height=6)
+                               font=FUENTE_BOTON, width=50, height=6)
+    for jugador in lista_jugadores:
+        listbox_jugadores.insert(tk.END, f"#{jugador.get_dorsal()} {jugador.get_nombre()} {jugador.get_apellido()} - {jugador.get_posicion()}")
     listbox_jugadores.pack(pady=5)
 
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
