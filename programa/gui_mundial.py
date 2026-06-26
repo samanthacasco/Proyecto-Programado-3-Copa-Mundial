@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 from utilidades import limpiar_ventana
-
+from seleccion import Seleccion
+   
 FONDO_OSCURO = "#0a1628"
 FONDO_CARD = "#0d2137"
 DORADO = "#f1c40f"
@@ -56,10 +57,17 @@ def mostrar_configurar_mundial(ventana, lista_selecciones, mundial, mostrar_menu
         if len(lista_selecciones) != cantidad_grupos * 4:
             messagebox.showerror("Error", "La cantidad de selecciones debe ser igual a grupos x 4")
             return
-
+        for seleccion in lista_selecciones:
+            if len(seleccion.get_jugadores()) == 0:
+                messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} no tiene jugadores registrados")
+                return
+            if seleccion.get_entrenador() is None:
+                messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} no tiene entrenador asignado")
+                return
+            
         for seleccion in lista_selecciones:
             mundial.registrar_seleccion(seleccion)
-
+ 
         creado = mundial.crear_grupos(cantidad_grupos)
 
         if creado == False:
