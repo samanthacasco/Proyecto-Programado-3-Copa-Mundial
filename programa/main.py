@@ -3,7 +3,8 @@ from utilidades import centrar_ventana, limpiar_ventana
 from gui_admin import mostrar_admin_paises_selecciones, mostrar_admin_entrenadores_jugadores
 from mundial import Mundial
 from gui_mundial import mostrar_configurar_mundial, mostrar_jugar_mundial, mostrar_estadisticas
-from persistencia import cargar_paises, cargar_selecciones, cargar_jugadores
+from persistencia import cargar_paises, cargar_selecciones, cargar_jugadores, cargar_entrenadores
+
 # Estilos
 FONDO_OSCURO = "#0a1628"
 FONDO_CARD = "#0d2137"
@@ -27,7 +28,8 @@ lista_jugadores = []
 # Cargar datos guardados al iniciar
 lista_paises = cargar_paises()
 lista_selecciones = cargar_selecciones(lista_paises)
-lista_jugadores = cargar_jugadores()
+lista_jugadores = cargar_jugadores(lista_selecciones)
+lista_entrenadores = cargar_entrenadores(lista_selecciones)
 
 mundial = Mundial("Mundial FIFA 2026", 2026) 
 
