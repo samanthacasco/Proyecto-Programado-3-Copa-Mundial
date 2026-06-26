@@ -69,10 +69,15 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
             messagebox.showerror("Error", "Todos los campos son obligatorios")
             return
         
+        for pais in lista_paises:
+            if pais.get_codigo_fifa() == codigo:
+                messagebox.showerror("Error", f"Ya existe un país con el código {codigo}")
+                return
+        
         if not ranking.isdigit():
             messagebox.showerror("Error", "El ranking debe ser un número entero positivo")
             return
-    
+
         nuevo_pais = Pais(codigo, nombre, continente, int(ranking))
         lista_paises.append(nuevo_pais)
         guardar_paises(lista_paises)
@@ -178,6 +183,11 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
         if codigo == "":
             messagebox.showerror("Error", "El código es obligatorio")
             return
+        
+        for s in lista_selecciones:
+            if s.get_codigo_equipo() == codigo:
+                messagebox.showerror("Error", f"Ya existe una selección con el código {codigo}")
+                return
         
         if not seleccion:
             messagebox.showerror("Error", "Debe seleccionar un país")
@@ -337,7 +347,12 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
         if not anios_exp.isdigit():
             messagebox.showerror("Error", "Los años de experiencia debe ser un número entero positivo")
             return
-
+        if seleccion:
+            seleccion_elegida = lista_selecciones[seleccion[0]]
+            if seleccion_elegida.get_entrenador() is not None:
+                messagebox.showerror("Error", f"La selección {seleccion_elegida.get_codigo_equipo()} ya tiene un entrenador asignado")
+                return
+            
         nuevo_entrenador = Entrenador(nombre, apellido, fecha_nacimiento, nacionalidad,
                                       licencia, int(anios_exp), sistema_juego)
         if seleccion:
@@ -480,7 +495,14 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         if puntaje_num < 1 or puntaje_num > 100:
             messagebox.showerror("Error", "El puntaje debe ser un número entre 1 y 100")
             return
-
+        
+        if seleccion:
+            seleccion_elegida = lista_selecciones[seleccion[0]]
+            for jugador in seleccion_elegida.get_jugadores():
+                if jugador.get_dorsal() == dorsal_num:
+                    messagebox.showerror("Error", f"Ya existe un jugador con el dorsal {dorsal_num} en esa selección")
+                    return
+                
         nuevo_jugador = Futbolista(nombre, apellido, fecha_nacimiento, nacionalidad,
                                    dorsal_num, posicion, puntaje_num)
         if seleccion:
