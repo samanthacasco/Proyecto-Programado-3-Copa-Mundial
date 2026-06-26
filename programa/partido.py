@@ -50,14 +50,26 @@ class Partido:
             else: 
                 self.__goles_equipo1 =  random.randint(0, 3)
                 self.__goles_equipo2 =  random.randint(2, 6)
-        
-        # Registrar resultados de las estadisticas de cada seccion 
-        self.__equipo_1.registrar_resultado(self.__goles_equipo1, self.__goles_equipo2, 0, 0)
-        self.__equipo_2.registrar_resultado(self.__goles_equipo2, self.__goles_equipo1, 0, 0)
+
+
+        # Simular tarjetas del partido
+        tarjetas_am_equipo1 = random.randint(0, 3)
+        tarjetas_roj_equipo1 = random.randint(0, 1)
+
+        tarjetas_am_equipo2 = random.randint(0, 3)
+        tarjetas_roj_equipo2 = random.randint(0, 1)
+                
+        # Registrar resultados de las estadisticas de cada seleccion 
+        self.__equipo_1.registrar_resultado(self.__goles_equipo1, self.__goles_equipo2, tarjetas_am_equipo1, tarjetas_roj_equipo1)
+        self.__equipo_2.registrar_resultado(self.__goles_equipo2, self.__goles_equipo1, tarjetas_am_equipo2, tarjetas_roj_equipo2)
 
         # Registrar goles a jugadores
         self.registrar_goles_jugadores(self.__equipo_1, self.__goles_equipo1)
         self.registrar_goles_jugadores(self.__equipo_2, self.__goles_equipo2)
+
+        # Registrar tarjetas a jugadores
+        self.registrar_tarjetas_jugadores(self.__equipo_1,tarjetas_am_equipo1,tarjetas_roj_equipo1)
+        self.registrar_tarjetas_jugadores(self.__equipo_2, tarjetas_am_equipo2,tarjetas_roj_equipo2)
     
     def registrar_goles_jugadores(self, seleccion, cantidad_goles):
         """
@@ -72,6 +84,26 @@ class Partido:
         for i in range(cantidad_goles):
             jugador = random.choice(jugadores)
             jugador.registrar_gol()
+
+    def registrar_tarjetas_jugadores(self, seleccion, tarjetas_am, tarjetas_roj):
+        """
+        Registra las tarjetas amarillas y rojas recibidas por los futbolistas de una selección.
+        #E: seleccion (Seleccion), tarjetas_am (int), tarjetas_roj (int)
+        #S: No retorna nada, actualiza las tarjetas de los futbolistas
+        #R: La selección debe tener jugadores registrados
+        """
+
+        jugadores = seleccion.get_jugadores()
+        # Registrar tarjetas amarillas
+        for i in range(tarjetas_am):
+            jugador = random.choice(jugadores)
+            jugador.registrar_tarjeta("amarilla")
+
+        # Registrar tarjetas rojas
+        for i in range(tarjetas_roj):
+            jugador = random.choice(jugadores)
+            jugador.registrar_tarjeta("roja")
+            
         
     def generar_ganador(self):
         """
