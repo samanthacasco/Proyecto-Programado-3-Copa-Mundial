@@ -42,6 +42,12 @@ class Mundial:
         self.__selecciones.append(seleccion)
 
     def crear_grupos(self, cantidad_grupos):
+        """
+        Organiza las selecciones registradas en la cantidad de grupos indicada de forma equilibrada.
+        #E: cantidad_grupos (int) - cantidad de grupos a crear
+        #S: Retorna True si los grupos se crearon correctamente, False en caso contrario
+        #R: La cantidad de selecciones debe ser igual a cantidad_grupos multiplicado por 4
+        """
         if cantidad_grupos < 2:
             return False
     
