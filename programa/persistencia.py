@@ -12,6 +12,9 @@ def guardar_paises(lista_paises):
     #S: No retorna nada, escribe los datos en el archivo paises.txt
     #R: lista_paises debe contener objetos Pais válidos
     """
+    if len(lista_paises) == 0: 
+        return
+    
     with open("paises.txt", "w", encoding="utf-8") as archivo:
         for pais in lista_paises:
             archivo.write(f"{pais.get_codigo_fifa()}|{pais.get_nombre()}|{pais.get_continente()}|{pais.get_ranking_fifa()}\n")
