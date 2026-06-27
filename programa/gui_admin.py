@@ -200,19 +200,23 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
         """
         Muestra los datos completos de todos los países registrados.
         #E: No recibe parámetros, recorre lista_paises
-        #S: No retorna nada, abre una ventana con los datos
-        #R: Debe haber países registrados
+        #S: No retorna nada, muestra los datos en pantalla
+        #R: La ventana debe estar inicializada correctamente
         """
-        if len(lista_paises) == 0:
-            mostrar_ventana_datos("Países registrados", "No hay países registrados")
-            return
-
         texto = ""
         for pais in lista_paises:
-            texto += pais.mostrar_datos() + "\n\n"
+            texto += pais.mostrar_datos() + "\n"
             texto += "----------------------------------------\n\n"
-
-        mostrar_ventana_datos("Países registrados", texto)
+        
+        if texto == "":
+            texto = "No hay países registrados"
+        mostrar_ventana_datos(ventana, "Países registrados", texto)
+        
+        tk.Button(ventana, text="🔙 Volver", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
+                  activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                  relief="flat", padx=20, pady=10, cursor="hand2",
+                  command=lambda: mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones)
+                  ).pack(pady=10, fill="x", padx=40)
 
     btn_ver = tk.Button(ventana, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
                         activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
@@ -340,21 +344,25 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
     
     def ver_selecciones_registradas():
         """
-        Muestra los datos completos de todos las selecciones registradas.
+        Muestra los datos completos de todas las selecciones registradas.
         #E: No recibe parámetros, recorre lista_selecciones
-        #S: No retorna nada, muestra los datos en un messagebox
-        #R: Debe haber selecciones registrados
+        #S: No retorna nada, muestra los datos en pantalla
+        #R: La ventana debe estar inicializada correctamente
         """
-        if len(lista_selecciones) == 0:
-            mostrar_ventana_datos("Selecciones registradas", "No hay selecciones registradas")
-            return
-
         texto = ""
         for seleccion in lista_selecciones:
-            texto += seleccion.mostrar_datos() + "\n\n"
+            texto += seleccion.mostrar_datos() + "\n"
             texto += "----------------------------------------\n\n"
-
-        mostrar_ventana_datos("Selecciones registradas", texto)
+        
+        if texto == "":
+            texto = "No hay selecciones registradas"
+        mostrar_ventana_datos(ventana, "Selecciones registradas", texto)
+        
+        tk.Button(ventana, text="🔙 Volver", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
+                  activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                  relief="flat", padx=20, pady=10, cursor="hand2",
+                  command=lambda: mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu)
+                  ).pack(pady=10, fill="x", padx=40)
 
     btn_ver = tk.Button(ventana, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
                         activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
@@ -615,21 +623,27 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
     def ver_entrenadores_registrados():
         """
         Muestra los datos completos de todos los entrenadores registrados.
-        #E: No recibe parámetros, recorre lista_entrenadores
-        #S: No retorna nada, muestra los datos en un messagebox
-        #R: Debe haber entrenadores registrados
+        #E: No recibe parámetros, recorre lista_selecciones
+        #S: No retorna nada, muestra los datos en pantalla
+        #R: La ventana debe estar inicializada correctamente
         """
-        
         texto = ""
         for sel in lista_selecciones:
             if sel.get_entrenador() is not None:
-                texto += sel.get_entrenador().mostrar_datos() + " | Selección: " + sel.get_codigo_equipo() + "\n\n"
+                texto += sel.get_entrenador().mostrar_datos() + "\n"
+                texto += "Selección: " + sel.get_codigo_equipo() + "\n"
                 texto += "----------------------------------------\n\n"
-                
+        
         if texto == "":
             texto = "No hay entrenadores registrados"
         
-        mostrar_ventana_datos("Entrenadores registrados", texto)
+        mostrar_ventana_datos(ventana, "Entrenadores registrados", texto)
+        
+        tk.Button(ventana, text="🔙 Volver", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
+                  activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                  relief="flat", padx=20, pady=10, cursor="hand2",
+                  command=lambda: mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu)
+                  ).pack(pady=10, fill="x", padx=40)
 
     btn_ver = tk.Button(frame, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
                         activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
@@ -961,19 +975,27 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
     def ver_jugadores_registrados():
         """
         Muestra los datos completos de todos los jugadores registrados.
-        #E: No recibe parámetros, recorre lista_jugadores
-        #S: No retorna nada, muestra los datos en un messagebox
-        #R: Debe haber jugadores registrados
+        #E: No recibe parámetros, recorre lista_selecciones
+        #S: No retorna nada, muestra los datos en pantalla
+        #R: La ventana debe estar inicializada correctamente
         """
         texto = ""
         for sel in lista_selecciones:
             for jug in sel.get_jugadores():
-                texto += jug.mostrar_datos() + "\n\n"
+                texto += jug.mostrar_datos() + "\n"
+                texto += "Selección: " + sel.get_codigo_equipo() + "\n"
                 texto += "----------------------------------------\n\n"
-                
+        
         if texto == "":
             texto = "No hay jugadores registrados"
-        mostrar_ventana_datos("Jugadores registrados", texto)
+        
+        mostrar_ventana_datos(ventana, "Jugadores registrados", texto)
+        
+        tk.Button(ventana, text="🔙 Volver", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
+                  activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                  relief="flat", padx=20, pady=10, cursor="hand2",
+                  command=lambda: mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_selecciones, mostrar_menu)
+                  ).pack(pady=10, fill="x", padx=40)
 
     btn_ver = tk.Button(frame, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
                         activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
