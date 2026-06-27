@@ -16,6 +16,12 @@ class Mundial:
         self.__grupos = []
         self.__fases = []
         self.__campeon = None
+        
+        # controla que la fase de grupos no se simule más de una vez
+        self.__fase_grupos_jugada = False
+        
+        # controla que las eliminatorias y el campeón no se calculen más de una vez
+        self.__mundial_finalizado = False
 
     def registrar_pais(self, pais):
         """
@@ -61,14 +67,24 @@ class Mundial:
     
     def jugar_fase_grupos(self):
         """
-        Simula todos los partidos de la fase de grupos
+        Simula todos los partidos de la fase de grupos una sola vez
         #E: No recibe parámetros
-        #S: No retorna nada, simula los partidos de todos los grupos
+        #S: Retorna True si se jugó correctamente, False si ya estaba jugada
         #R: Los grupos deben haber sido creados previamente
         """
+        # Evita que los partidos de grupos se simulen más de una vez
+        if self.__fase_grupos_jugada == True:
+            return False
+
+        # Simula los partidos de cada grupo
         for grupo in self.__grupos:
             grupo.jugar_partidos()
-    
+
+        # Marca la fase de grupos como jugada
+        self.__fase_grupos_jugada = True
+
+        return True
+        
     def armar_fase_eliminatoria(self, nombre_fase, clasificados):
         """
         Crea una fase eliminatoria a partir de una lista de selecciones clasificadas
@@ -122,30 +138,66 @@ class Mundial:
         #S: Retorna la selección campeona del mundial
         #R: La fase de grupos debe haberse jugado previamente
         """
+        # Si el mundial ya finalizó, retorna el campeón existente
+        # y evita simular otra vez las eliminatorias
+        if self.__mundial_finalizado == True:
+            return self.__campeon
+        
+        # Obtiene las selecciones clasificadas desde la fase de grupos
         clasificados = self.obtener_clasificados_grupos()
-
+        
+        # Si hay 32 clasificados, se juega dieciseisavos
         if len(clasificados) == 32:
             fase = self.armar_fase_eliminatoria("Dieciseisavos de final", clasificados)
             clasificados = self.jugar_fase_eliminatoria(fase)
-
+            
+            # Los eliminados llegaron a dieciseisavos
+            for seleccion in fase.get_eliminados():
+                seleccion.actualizar_fase_alcanzada("Dieciseisavos de final")
+        
+        # Si hay 16 clasificados, se juega octavos
         if len(clasificados) == 16:
             fase = self.armar_fase_eliminatoria("Octavos de final", clasificados)
-            clasificados = self.jugar_fase_eliminatoria(fase)
-
+            clasificados = self.jugar_fase_eliminatoria(fase) 
+           
+            # Los eliminados llegaron hasta octavos
+            for seleccion in fase.get_eliminados():
+                seleccion.actualizar_fase_alcanzada("Octavos de final")
+        
+        # Si hay 8 clasificados, se juega cuartos
         if len(clasificados) == 8:
             fase = self.armar_fase_eliminatoria("Cuartos de final", clasificados)
             clasificados = self.jugar_fase_eliminatoria(fase)
-
+            
+            # Los eliminados llegaron hasta cuartos
+            for seleccion in fase.get_eliminados():
+                seleccion.actualizar_fase_alcanzada("Cuartos de final")
+        
+        # Si hay 4 clasificados, se juega semifinal
         if len(clasificados) == 4:
             fase = self.armar_fase_eliminatoria("Semifinales", clasificados)
             clasificados = self.jugar_fase_eliminatoria(fase)
-
+            
+            # Los eliminados llegaron hasta semifinal
+            for seleccion in fase.get_eliminados():
+                seleccion.actualizar_fase_alcanzada("Semifinal")
+       
+        # Si hay 2 clasificados, se juega la final
         if len(clasificados) == 2:
             fase = self.armar_fase_eliminatoria("Final", clasificados)
             clasificados = self.jugar_fase_eliminatoria(fase)
 
-        self.__campeon = clasificados[0]
+            # El eliminado de la final es el subcampeón
+            for seleccion in fase.get_eliminados():
+                seleccion.actualizar_fase_alcanzada("Finalista")
 
+        # El único clasificado restante es el campeón
+        self.__campeon = clasificados[0]
+        self.__campeon.actualizar_fase_alcanzada("Campeón")
+
+         # Marca el mundial como finalizado para evitar repetir eliminatorias
+        self.__mundial_finalizado = True
+        
         return self.__campeon
     
     def mostrar_tabla_general(self):
