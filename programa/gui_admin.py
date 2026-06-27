@@ -512,8 +512,13 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
         guardar_entrenadores(lista_selecciones)
         
         messagebox.showinfo("Éxito", f"Entrenador {nombre} registrado correctamente")
-        listbox_entrenadores.insert(tk.END, f"{nombre} {apellido} - {licencia} - {anios_exp} años")
-
+        
+        listbox_entrenadores.delete(0, tk.END)
+        for sel in lista_selecciones:
+            if sel.get_entrenador() is not None:
+                e = sel.get_entrenador()
+                listbox_entrenadores.insert(tk.END, f"{e.get_nombre()} {e.get_apellido()} - {sel.get_codigo_equipo()}")
+        
         entry_nombre_entrenador.delete(0, tk.END)
         entry_apellido_entrenador.delete(0, tk.END)
         entry_fecha_naci_entrenador.delete(0, tk.END)
