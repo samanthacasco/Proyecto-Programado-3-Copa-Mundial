@@ -501,12 +501,7 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
         if not anios_exp.isdigit():
             messagebox.showerror("Error", "Los años de experiencia debe ser un número entero positivo")
             return
-        if seleccion:
-            seleccion_elegida = lista_selecciones[seleccion[0]]
-            if seleccion_elegida.get_entrenador() is not None:
-                messagebox.showerror("Error", f"La selección {seleccion_elegida.get_codigo_equipo()} ya tiene un entrenador asignado")
-                return
-            
+         
         nuevo_entrenador = Entrenador(nombre, apellido, fecha_nacimiento, nacionalidad,
                                       licencia, int(anios_exp), sistema_juego)
         if seleccion:
