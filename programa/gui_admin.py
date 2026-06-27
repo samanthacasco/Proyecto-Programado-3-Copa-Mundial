@@ -542,7 +542,7 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         guardar_jugadores(lista_selecciones)
         
         messagebox.showinfo("Éxito", f"Jugador {nombre} registrado correctamente")
-        listbox_jugadores.insert(tk.END, f"#{dorsal} {nombre} {apellido} - {posicion}")
+        listbox_jugadores.insert(tk.END, f"#{dorsal} {nombre} {apellido} - {posicion} ({seleccion_elegida.get_codigo_equipo()})")
 
         entry_nombre_jugador.delete(0, tk.END)
         entry_apellido_jugador.delete(0, tk.END)
@@ -566,6 +566,61 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
             listbox_jugadores.insert(tk.END, f"#{jugador.get_dorsal()} {jugador.get_nombre()} {jugador.get_apellido()} - {jugador.get_posicion()} ({seleccion.get_codigo_equipo()})")
     listbox_jugadores.pack(pady=5)
 
+    def eliminar_jugador_seleccionado():
+        """
+        Elimina el jugador seleccionado del listbox y de su selección.
+        #E: No recibe parámetros, lee la selección del listbox_jugadores
+        #S: No retorna nada, elimina el jugador y actualiza la lista
+        #R: Debe haber un jugador seleccionado en el listbox
+        """
+        seleccion_listbox = listbox_jugadores.curselection()
+        if not seleccion_listbox:
+            messagebox.showerror("Error", "Seleccioná un jugador de la lista para eliminar")
+            return
+
+        indice = seleccion_listbox[0]
+        texto = listbox_jugadores.get(indice)
+        # formato: "#10 Nombre Apellido - Posicion (CODIGO)"
+        dorsal_str = texto.split(" ")[0][1:]         # quita el '#'
+        codigo_sel = texto.split("(")[1].replace(")", "")
+
+        if not dorsal_str.isdigit():
+            messagebox.showerror("Error", "No se pudo leer el dorsal del jugador")
+            return
+
+        dorsal_num = int(dorsal_str)
+
+        seleccion_encontrada = None
+        for sel in lista_selecciones:
+            if sel.get_codigo_equipo() == codigo_sel:
+                seleccion_encontrada = sel
+                break
+
+        if seleccion_encontrada is None:
+            messagebox.showerror("Error", "No se encontró la selección del jugador")
+            return
+
+        confirmacion = messagebox.askyesno("Confirmar", f"¿Eliminar jugador #{dorsal_num} de {codigo_sel}?")
+        if not confirmacion:
+            return
+
+        seleccion_encontrada.eliminar_jugador(dorsal_num)
+
+        # Reconstruir lista_jugadores desde las selecciones actualizadas
+        lista_jugadores.clear()
+        for sel in lista_selecciones:
+            for j in sel.get_jugadores():
+                lista_jugadores.append(j)
+
+        listbox_jugadores.delete(indice)
+        guardar_jugadores(lista_selecciones)
+        messagebox.showinfo("Éxito", f"Jugador #{dorsal_num} eliminado correctamente")
+
+    tk.Button(frame, text="🗑️ Eliminar Jugador Seleccionado", bg="#8b0000", fg=TEXTO_BLANCO,
+              activebackground="#a00000", activeforeground=TEXTO_BLANCO,
+              relief="flat", padx=20, pady=10, cursor="hand2",
+              command=eliminar_jugador_seleccionado).pack(pady=5, fill="x", padx=40)
+    
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
               activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
               relief="flat", padx=20, pady=10, cursor="hand2",
