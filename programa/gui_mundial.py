@@ -86,9 +86,12 @@ def mostrar_configurar_mundial(ventana, lista_selecciones, mundial, mostrar_menu
             resultado_texto.insert(tk.END, "\n")
 
         messagebox.showinfo("Éxito", "Grupos creados correctamente")
+        # Desactivarlos de pues de usarlo 
+        btn_crear_grupos.config(state="disabled")
 
-    tk.Button(ventana,text="Crear grupos",font=FUENTE_BOTON,bg=FONDO_CARD,fg=TEXTO_BLANCO,
-            command=configurar).pack(pady=5, fill="x", padx=40)
+    btn_crear_grupos = tk.Button(ventana,text="Crear grupos",font=FUENTE_BOTON,bg=FONDO_CARD,fg=TEXTO_BLANCO,
+            command=configurar)
+    btn_crear_grupos.pack(pady=5, fill="x", padx=40)
 
     tk.Button(ventana,text="🔙 Volver al menú",font=FUENTE_BOTON,bg=FONDO_CARD,fg=TEXTO_AZUL,
             command=mostrar_menu).pack(pady=5, fill="x", padx=40)
@@ -124,6 +127,8 @@ def mostrar_jugar_mundial(ventana, mundial, mostrar_menu):
         resultado_texto.config(state="disabled")
 
         messagebox.showinfo("Éxito", "Fase de grupos simulada correctamente.")
+        btn_simular_fase.config(state="disabled")
+        btn_simular_eliminatorias.config(state="normal")
 
     def simular_eliminatorias():
         if len(mundial.get_grupos()) == 0:
@@ -136,7 +141,6 @@ def mostrar_jugar_mundial(ventana, mundial, mostrar_menu):
         resultado_texto.insert(tk.END, "\nFASES ELIMINATORIAS\n\n")
         
         for fase in mundial.get_fases():  
-            resultado_texto.insert(tk.END, "\nFASES ELIMINATORIAS\n\n")
             resultado_texto.insert(tk.END, fase.mostrar_juegos())
             resultado_texto.insert(tk.END, "\n")
             
@@ -147,12 +151,16 @@ def mostrar_jugar_mundial(ventana, mundial, mostrar_menu):
         mundial.generar_reporte()
 
         messagebox.showinfo("Éxito", "Mundial finalizado correctamente.")
+        
+        btn_simular_eliminatorias.config(state="disabled")
 
-    tk.Button(ventana, text="Simular fase de grupos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
-        command=simular_grupos).pack(pady=5, fill="x", padx=40)
+    btn_simular_fase= tk.Button(ventana, text="Simular fase de grupos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
+        command=simular_grupos)
+    btn_simular_fase.pack(pady=5, fill="x", padx=40)
 
-    tk.Button(ventana, text="Simular eliminatorias y campeón", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
-        command=simular_eliminatorias).pack(pady=5, fill="x", padx=40)
+    btn_simular_eliminatorias= tk.Button(ventana, text="Simular eliminatorias y campeón", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
+        command=simular_eliminatorias, state="disabled")
+    btn_simular_eliminatorias.pack(pady=5, fill="x", padx=40)
 
     tk.Button(ventana, text="🔙 Volver al menú", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
         command=mostrar_menu).pack(pady=5, fill="x", padx=40)
