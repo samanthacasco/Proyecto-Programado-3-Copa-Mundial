@@ -100,6 +100,8 @@ class Grupo:
         # Ordenar la tabla de mayor a menor según:
         # 1. Puntos
         # 2. Diferencia de goles 
+        # 3. Goles favor
+        
         for i in range(len(tabla)):
             for j in range(len(tabla) - 1):
                 primero = j
@@ -108,12 +110,17 @@ class Grupo:
                 # Comparar puntos
                 if tabla[primero][1] < tabla[siguiente][1]:
                     tabla[primero], tabla[siguiente] = tabla[siguiente], tabla[primero]
-
-                # Si tienen los mismos puntos, comparar diferencia de goles
+                    
+                    # Si tienen los mismos puntos, comparar diferencia de goles
                 elif tabla[primero][1] == tabla[siguiente][1]:
                     if tabla[primero][4] < tabla[siguiente][4]:
                         tabla[primero], tabla[siguiente] = tabla[siguiente], tabla[primero]
-                
+
+                    # Si también tienen la misma diferencia, comparar goles a favor
+                    elif tabla[primero][4] == tabla[siguiente][4]:
+                        if tabla[primero][2] < tabla[siguiente][2]:
+                            tabla[primero], tabla[siguiente] = tabla[siguiente], tabla[primero]
+        
         return tabla
 
 
