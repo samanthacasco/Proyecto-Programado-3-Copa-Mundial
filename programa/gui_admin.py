@@ -6,7 +6,7 @@ from seleccion import Seleccion
 from entrenador import Entrenador
 from futbolista import Futbolista
 from persistencia import guardar_paises, guardar_selecciones, guardar_jugadores, guardar_entrenadores
-
+from gui_mostrar import mostrar_ventana_datos
 
 # Estilos
 FONDO_OSCURO = "#0a1628"
@@ -111,6 +111,113 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
     for pais in lista_paises:
         listbox_paises.insert(tk.END, f"{pais.get_codigo_fifa()} - {pais.get_nombre()} - {pais.get_continente()} - Ranking: {pais.get_ranking_fifa()}")
     listbox_paises.pack(pady=15, fill="x", padx=40)
+    
+    indice_seleccionado = []
+    
+    def cargar_pais_en_campos(event):
+        """
+        Carga los datos del país seleccionado en los campos de entrada.
+        #E: event (tk.Event), generado al hacer clic en el listbox
+        #S: No retorna nada, llena los Entry con los datos del país
+        #R: Debe haber un país seleccionado en el listbox
+        """
+        seleccion = listbox_paises.curselection()
+        if not seleccion:
+            return
+        pais = lista_paises[seleccion[0]]
+        indice_seleccionado.clear()
+        indice_seleccionado.append(seleccion[0])
+        
+        entry_codigo.delete(0, tk.END)
+        entry_codigo.insert(0, pais.get_codigo_fifa())
+        entry_nombre.delete(0, tk.END)
+        entry_nombre.insert(0, pais.get_nombre())
+        entry_continente.delete(0, tk.END)
+        entry_continente.insert(0, pais.get_continente())
+        entry_ranking.delete(0, tk.END)
+        entry_ranking.insert(0, pais.get_ranking_fifa())
+
+    listbox_paises.bind("<<ListboxSelect>>", cargar_pais_en_campos)
+
+    def actualizar_pais():
+        """
+        Actualiza los datos del país seleccionado en el listbox.
+        #E: No recibe parámetros, lee los valores de los Entry y la selección del listbox
+        #S: No retorna nada, actualiza el objeto Pais y refresca el listbox
+        #R: Debe haber un país seleccionado en el listbox
+        """
+        if len(indice_seleccionado) == 0:
+            messagebox.showerror("Error", "Seleccioná un país de la lista para actualizar")
+            return
+
+        indice = indice_seleccionado[0]
+        pais = lista_paises[indice]
+
+        codigo = entry_codigo.get()
+        nombre = entry_nombre.get()
+        continente = entry_continente.get()
+        ranking = entry_ranking.get()
+
+        if codigo == "" or nombre == "" or continente == "" or ranking == "":
+            messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+        if not len(codigo) == 3:
+            messagebox.showerror("Error", "El código FIFA debe tener exactamente 3 letras")
+            return
+        if not ranking.isdigit():
+            messagebox.showerror("Error", "El ranking debe ser un número entero positivo")
+            return
+        ranking_num = int(ranking)
+        if ranking_num <= 0:
+            messagebox.showerror("Error", "El ranking debe ser mayor a 0")
+            return
+
+        # Validar que el nuevo código no choque con otro país distinto
+        for otro_pais in lista_paises:
+            if otro_pais != pais and otro_pais.get_codigo_fifa() == codigo:
+                messagebox.showerror("Error", f"Ya existe otro país con el código {codigo}")
+                return
+
+        pais.actualizar_datos(codigo, nombre, continente, ranking_num)
+        guardar_paises(lista_paises)
+
+        listbox_paises.delete(indice)
+        listbox_paises.insert(indice, f"{codigo} - {nombre} - {continente} - Ranking: {ranking}")
+
+        messagebox.showinfo("Éxito", f"País {nombre} actualizado correctamente")
+
+        entry_codigo.delete(0, tk.END)
+        entry_nombre.delete(0, tk.END)
+        entry_continente.delete(0, tk.END)
+        entry_ranking.delete(0, tk.END)
+
+    btn_actualizar = tk.Button(ventana, text="✏️ Actualizar País Seleccionado", font=FUENTE_BOTON, bg="#1a5c3a", fg=TEXTO_BLANCO,
+                               activebackground="#247a4d", activeforeground=TEXTO_BLANCO,
+                               relief="flat", padx=20, pady=10, cursor="hand2", command=actualizar_pais)
+    btn_actualizar.pack(pady=5, fill="x", padx=40)
+    
+    def ver_paises_registrados():
+        """
+        Muestra los datos completos de todos los países registrados.
+        #E: No recibe parámetros, recorre lista_paises
+        #S: No retorna nada, abre una ventana con los datos
+        #R: Debe haber países registrados
+        """
+        if len(lista_paises) == 0:
+            mostrar_ventana_datos("Países registrados", "No hay países registrados")
+            return
+
+        texto = ""
+        for pais in lista_paises:
+            texto += pais.mostrar_datos() + "\n\n"
+            texto += "----------------------------------------\n\n"
+
+        mostrar_ventana_datos("Países registrados", texto)
+
+    btn_ver = tk.Button(ventana, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
+                        activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                        relief="flat", padx=20, pady=10, cursor="hand2", command=ver_paises_registrados)
+    btn_ver.pack(pady=5, fill="x", padx=40)
     
     btn_volver = tk.Button(ventana, text="🔙  Volver",font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
                            activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
@@ -230,6 +337,29 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
     for seleccion in lista_selecciones:       
         listbox_seleccion.insert(tk.END, seleccion.get_codigo_equipo())
     listbox_seleccion.pack(pady=5)
+    
+    def ver_selecciones_registradas():
+        """
+        Muestra los datos completos de todos las selecciones registradas.
+        #E: No recibe parámetros, recorre lista_selecciones
+        #S: No retorna nada, muestra los datos en un messagebox
+        #R: Debe haber selecciones registrados
+        """
+        if len(lista_selecciones) == 0:
+            mostrar_ventana_datos("Selecciones registradas", "No hay selecciones registradas")
+            return
+
+        texto = ""
+        for seleccion in lista_selecciones:
+            texto += seleccion.mostrar_datos() + "\n\n"
+            texto += "----------------------------------------\n\n"
+
+        mostrar_ventana_datos("Selecciones registradas", texto)
+
+    btn_ver = tk.Button(ventana, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
+                        activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                        relief="flat", padx=20, pady=10, cursor="hand2", command=ver_selecciones_registradas)
+    btn_ver.pack(pady=5, fill="x", padx=40)
     
     btn_volver = tk.Button(ventana, text="🔙  Volver", bg=FONDO_CARD, fg=TEXTO_BLANCO, activebackground="#1a3a5c", 
                             activeforeground=TEXTO_BLANCO, relief="flat", padx=20, pady=10, cursor="hand2",
@@ -405,6 +535,107 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
             listbox_entrenadores.insert(tk.END, f"{e.get_nombre()} {e.get_apellido()} - {seleccion.get_codigo_equipo()}")
     listbox_entrenadores.pack(pady=5)
 
+    entrenador_seleccionado = []
+
+    def cargar_entrenador_en_campos(event):
+        """
+        Carga los datos del entrenador seleccionado en los campos de entrada.
+        #E: event (tk.Event), generado al hacer clic en el listbox
+        #S: No retorna nada, llena los Entry con los datos del entrenador
+        #R: Debe haber un entrenador seleccionado en el listbox
+        """
+        seleccion_listbox = listbox_entrenadores.curselection()
+        if not seleccion_listbox:
+            return
+
+        indice = seleccion_listbox[0]
+        texto = listbox_entrenadores.get(indice)
+        # formato: "Nombre Apellido - CODIGO"
+        codigo_sel = texto.split(" - ")[1]
+
+        entrenador = None
+        for sel in lista_selecciones:
+            if sel.get_codigo_equipo() == codigo_sel:
+                entrenador = sel.get_entrenador()
+
+        if entrenador is None:
+            return
+
+        entrenador_seleccionado.clear()
+        entrenador_seleccionado.append(entrenador)
+
+        entry_licencia_entrenador.delete(0, tk.END)
+        entry_licencia_entrenador.insert(0, entrenador.get_licencia())
+        entry_anios_exp_entrenador.delete(0, tk.END)
+        entry_anios_exp_entrenador.insert(0, entrenador.get_experiencia_anios())
+        entry_sistema_juego_entrenador.delete(0, tk.END)
+        entry_sistema_juego_entrenador.insert(0, entrenador.get_sistema_juego())
+
+    listbox_entrenadores.bind("<<ListboxSelect>>", cargar_entrenador_en_campos)
+
+    def actualizar_entrenador():
+        """
+        Actualiza la licencia, experiencia y sistema de juego del entrenador seleccionado.
+        #E: No recibe parámetros, lee los Entry y el entrenador guardado
+        #S: No retorna nada, actualiza el objeto Entrenador y guarda
+        #R: Debe haber un entrenador seleccionado del listbox
+        """
+        if len(entrenador_seleccionado) == 0:
+            messagebox.showerror("Error", "Seleccioná un entrenador de la lista para actualizar")
+            return
+
+        entrenador = entrenador_seleccionado[0]
+
+        licencia = entry_licencia_entrenador.get()
+        anios_exp = entry_anios_exp_entrenador.get()
+        sistema_juego = entry_sistema_juego_entrenador.get()
+
+        if licencia == "" or anios_exp == "" or sistema_juego == "":
+            messagebox.showerror("Error", "Licencia, experiencia y sistema de juego son obligatorios")
+            return
+        if not anios_exp.isdigit():
+            messagebox.showerror("Error", "Los años de experiencia deben ser un número entero positivo")
+            return
+
+        entrenador.actualizar_datos(licencia, int(anios_exp), sistema_juego)
+        guardar_entrenadores(lista_selecciones)
+
+        messagebox.showinfo("Éxito", "Entrenador actualizado correctamente")
+
+        entry_licencia_entrenador.delete(0, tk.END)
+        entry_anios_exp_entrenador.delete(0, tk.END)
+        entry_sistema_juego_entrenador.delete(0, tk.END)
+        entrenador_seleccionado.clear()
+
+    tk.Button(frame, text="✏️ Actualizar Entrenador Seleccionado", bg="#1a5c3a", fg=TEXTO_BLANCO,
+              activebackground="#247a4d", activeforeground=TEXTO_BLANCO,
+              relief="flat", padx=20, pady=10, cursor="hand2",
+              command=actualizar_entrenador).pack(pady=5, fill="x", padx=40)
+    
+    def ver_entrenadores_registrados():
+        """
+        Muestra los datos completos de todos los entrenadores registrados.
+        #E: No recibe parámetros, recorre lista_entrenadores
+        #S: No retorna nada, muestra los datos en un messagebox
+        #R: Debe haber entrenadores registrados
+        """
+        
+        texto = ""
+        for sel in lista_selecciones:
+            if sel.get_entrenador() is not None:
+                texto += sel.get_entrenador().mostrar_datos() + " | Selección: " + sel.get_codigo_equipo() + "\n\n"
+                texto += "----------------------------------------\n\n"
+                
+        if texto == "":
+            texto = "No hay entrenadores registrados"
+        
+        mostrar_ventana_datos("Entrenadores registrados", texto)
+
+    btn_ver = tk.Button(frame, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
+                        activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                        relief="flat", padx=20, pady=10, cursor="hand2", command=ver_entrenadores_registrados)
+    btn_ver.pack(pady=5, fill="x", padx=40)
+    
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
               activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
               relief="flat", padx=20, pady=10, cursor="hand2",
@@ -566,6 +797,112 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
             listbox_jugadores.insert(tk.END, f"#{jugador.get_dorsal()} {jugador.get_nombre()} {jugador.get_apellido()} - {jugador.get_posicion()} ({seleccion.get_codigo_equipo()})")
     listbox_jugadores.pack(pady=5)
 
+    jugador_seleccionado = []
+
+    def cargar_jugador_en_campos(event):
+        """
+        Carga los datos del jugador seleccionado en los campos de entrada.
+        #E: event (tk.Event), generado al hacer clic en el listbox
+        #S: No retorna nada, llena los Entry con los datos del jugador
+        #R: Debe haber un jugador seleccionado en el listbox
+        """
+        seleccion_listbox = listbox_jugadores.curselection()
+        if not seleccion_listbox:
+            return
+
+        indice = seleccion_listbox[0]
+        texto = listbox_jugadores.get(indice)
+        dorsal_str = texto.split(" ")[0][1:]
+        codigo_sel = texto.split("(")[1].replace(")", "")
+        dorsal_num = int(dorsal_str)
+
+        jugador_encontrado = None
+        for sel in lista_selecciones:
+            if sel.get_codigo_equipo() == codigo_sel:
+                for jug in sel.get_jugadores():
+                    if jug.get_dorsal() == dorsal_num:
+                        jugador_encontrado = jug
+                        break
+
+        if jugador_encontrado is None:
+            return
+
+        jugador_seleccionado.clear()
+        jugador_seleccionado.append(jugador_encontrado)
+
+        entry_dorsal_jugador.delete(0, tk.END)
+        entry_dorsal_jugador.insert(0, jugador_encontrado.get_dorsal())
+        entry_posicion_jugador.delete(0, tk.END)
+        entry_posicion_jugador.insert(0, jugador_encontrado.get_posicion())
+        entry_puntaje_jugador.delete(0, tk.END)
+        entry_puntaje_jugador.insert(0, jugador_encontrado.get_puntaje_individual())
+
+    listbox_jugadores.bind("<<ListboxSelect>>", cargar_jugador_en_campos)
+
+    def actualizar_jugador():
+        """
+        Actualiza el dorsal, posición y puntaje del jugador seleccionado.
+        #E: No recibe parámetros, lee los Entry y el jugador guardado
+        #S: No retorna nada, actualiza el objeto Futbolista y guarda
+        #R: Debe haber un jugador seleccionado del listbox
+        """
+        if len(jugador_seleccionado) == 0:
+            messagebox.showerror("Error", "Seleccioná un jugador de la lista para actualizar")
+            return
+
+        jugador = jugador_seleccionado[0]
+
+        dorsal = entry_dorsal_jugador.get()
+        posicion = entry_posicion_jugador.get()
+        puntaje = entry_puntaje_jugador.get()
+
+        if dorsal == "" or posicion == "" or puntaje == "":
+            messagebox.showerror("Error", "Dorsal, posición y puntaje son obligatorios")
+            return
+        if not dorsal.isdigit():
+            messagebox.showerror("Error", "El dorsal debe ser un número entero positivo")
+            return
+        dorsal_num = int(dorsal)
+        if dorsal_num < 1 or dorsal_num > 99:
+            messagebox.showerror("Error", "El dorsal debe ser un número entre 1 y 99")
+            return
+        if not puntaje.isdigit():
+            messagebox.showerror("Error", "El puntaje debe ser un número entero positivo")
+            return
+        puntaje_num = int(puntaje)
+        if puntaje_num < 1 or puntaje_num > 100:
+            messagebox.showerror("Error", "El puntaje debe ser un número entre 1 y 100")
+            return
+
+        # Validar que el nuevo dorsal no choque con otro jugador de la misma selección
+        for sel in lista_selecciones:
+            if jugador in sel.get_jugadores():
+                for jug in sel.get_jugadores():
+                    if jug != jugador and jug.get_dorsal() == dorsal_num:
+                        messagebox.showerror("Error", f"Ya existe otro jugador con el dorsal {dorsal_num} en esa selección")
+                        return
+
+        jugador.actualizar_datos(dorsal_num, posicion, puntaje_num)
+        guardar_jugadores(lista_selecciones)
+
+        # Refrescar el listbox completo
+        listbox_jugadores.delete(0, tk.END)
+        for sel in lista_selecciones:
+            for jug in sel.get_jugadores():
+                listbox_jugadores.insert(tk.END, f"#{jug.get_dorsal()} {jug.get_nombre()} {jug.get_apellido()} - {jug.get_posicion()} ({sel.get_codigo_equipo()})")
+
+        messagebox.showinfo("Éxito", f"Jugador actualizado correctamente")
+
+        entry_dorsal_jugador.delete(0, tk.END)
+        entry_posicion_jugador.delete(0, tk.END)
+        entry_puntaje_jugador.delete(0, tk.END)
+        jugador_seleccionado.clear()
+
+    tk.Button(frame, text="✏️ Actualizar Jugador Seleccionado", bg="#1a5c3a", fg=TEXTO_BLANCO,
+              activebackground="#247a4d", activeforeground=TEXTO_BLANCO,
+              relief="flat", padx=20, pady=10, cursor="hand2",
+              command=actualizar_jugador).pack(pady=5, fill="x", padx=40)
+    
     def eliminar_jugador_seleccionado():
         """
         Elimina el jugador seleccionado del listbox y de su selección.
@@ -620,6 +957,29 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
               activebackground="#a00000", activeforeground=TEXTO_BLANCO,
               relief="flat", padx=20, pady=10, cursor="hand2",
               command=eliminar_jugador_seleccionado).pack(pady=5, fill="x", padx=40)
+    
+    def ver_jugadores_registrados():
+        """
+        Muestra los datos completos de todos los jugadores registrados.
+        #E: No recibe parámetros, recorre lista_jugadores
+        #S: No retorna nada, muestra los datos en un messagebox
+        #R: Debe haber jugadores registrados
+        """
+        texto = ""
+        for sel in lista_selecciones:
+            for jug in sel.get_jugadores():
+                texto += jug.mostrar_datos() + "\n\n"
+                texto += "----------------------------------------\n\n"
+                
+        if texto == "":
+            texto = "No hay jugadores registrados"
+        mostrar_ventana_datos("Jugadores registrados", texto)
+
+    btn_ver = tk.Button(frame, text="🔍 Ver Datos Completos", font=FUENTE_BOTON, bg=FONDO_CARD, fg=DORADO,
+                        activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
+                        relief="flat", padx=20, pady=10, cursor="hand2", command=ver_jugadores_registrados)
+    btn_ver.pack(pady=5, fill="x", padx=40)
+    
     
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
               activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
