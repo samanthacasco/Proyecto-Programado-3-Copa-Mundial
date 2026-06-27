@@ -50,13 +50,22 @@ def mostrar_configurar_mundial(ventana, lista_selecciones, mundial, mostrar_menu
             messagebox.showerror("Error", "La cantidad mínima de grupos es 2")
             return
         
+        clasificados_posibles = cantidad_grupos * 2
+        if clasificados_posibles not in [2, 4, 8, 16, 32]:
+            messagebox.showerror("Error", "La cantidad de grupos debe ser 1, 2, 4, 8 o 16\n"
+                                 "para generar 2, 4, 8, 16 o 32 clasificados")
+            return
+        
         if len(lista_selecciones) == 0:
             messagebox.showerror("Error", "Primero debe registrar selecciones antes de crear grupos.")
             return
 
         if len(lista_selecciones) != cantidad_grupos * 4:
-            messagebox.showerror("Error", "La cantidad de selecciones debe ser igual a grupos x 4")
+            messagebox.showerror("Error", 
+                f"La cantidad de selecciones debe ser igual a grupos x 4.\n"
+                f"Tiene {len(lista_selecciones)} selecciones → use {len(lista_selecciones) // 4} grupos")
             return
+        
         for seleccion in lista_selecciones:
             if len(seleccion.get_jugadores()) < 11:
                 messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} debe tener al menos 11 jugadores")
