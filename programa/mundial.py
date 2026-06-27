@@ -75,6 +75,10 @@ class Mundial:
         # Evita que los partidos de grupos se simulen más de una vez
         if self.__fase_grupos_jugada == True:
             return False
+        
+        # Calcular fuerza de cada selección antes de simular
+        for seleccion in self.__selecciones:
+            seleccion.calcular_fuerza_equipo()
 
         # Simula los partidos de cada grupo
         for grupo in self.__grupos:
@@ -82,7 +86,6 @@ class Mundial:
 
         # Marca la fase de grupos como jugada
         self.__fase_grupos_jugada = True
-
         return True
         
     def armar_fase_eliminatoria(self, nombre_fase, clasificados):
