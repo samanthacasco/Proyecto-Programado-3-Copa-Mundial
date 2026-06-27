@@ -52,7 +52,7 @@ def mostrar_configurar_mundial(ventana, lista_selecciones, mundial, mostrar_menu
         
         clasificados_posibles = cantidad_grupos * 2
         if clasificados_posibles not in [2, 4, 8, 16, 32]:
-            messagebox.showerror("Error", "La cantidad de grupos debe ser 1, 2, 4, 8 o 16\n"
+            messagebox.showerror("Error", "La cantidad de grupos debe ser 2, 4, 8 o 16\n"
                                  "para generar 2, 4, 8, 16 o 32 clasificados")
             return
         
@@ -196,6 +196,70 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
             resultado_texto.insert(tk.END, "CAMPEÓN\n")
             resultado_texto.insert(tk.END, mundial.get_campeon().get_pais().get_nombre() + "\n\n")
 
+        # Mostrar selccion con mas goles
+        max_goles = -1
+        seleccion_mas_goles = None
+
+        for seleccion in mundial.get_selecciones():
+            goles = seleccion.get_total_goles_favor()
+
+            if goles > max_goles:
+                max_goles = goles
+                selecciones_mas_goles = [seleccion]
+
+            elif goles == max_goles:
+                selecciones_mas_goles.append(seleccion)
+                
+        resultado_texto.insert(tk.END, "SELECCIÓN(ES) CON MÁS GOLES\n")
+        for seleccion in selecciones_mas_goles:
+            resultado_texto.insert(tk.END,
+                seleccion.get_pais().get_nombre() +
+                " | Goles: " + str(max_goles) + "\n")
+
+        resultado_texto.insert(tk.END, "\n")
+
+        # Mostrar selccion con mas tarjetas amarillas
+        max_amarillas = -1    
+        selecciones_mas_amarillas = None
+        for seleccion in mundial.get_selecciones():
+            amarillas= seleccion.get_total_tarjetas_amarillas()
+
+            if amarillas > max_amarillas:
+                max_amarillas = amarillas
+                selecciones_mas_amarillas = [seleccion]
+            elif amarillas == max_amarillas:
+                selecciones_mas_amarillas.append(seleccion)
+
+        resultado_texto.insert(tk.END, "SELECCIÓN(ES) CON MÁS TARJETAS AMARILLAS\n")
+        
+        for seleccion in selecciones_mas_amarillas:
+            resultado_texto.insert(tk.END,
+                seleccion.get_pais().get_nombre() +
+                " | Amarillas: " + str(max_amarillas) + "\n")
+
+        resultado_texto.insert(tk.END, "\n")
+            
+        # Mostrar selccion con mas tarjetas rojas
+        max_rojas = -1
+        seleccion_mas_rojas = [ ]
+        for seleccion in mundial.get_selecciones():
+                rojas = seleccion.get_total_tarjetas_rojas()
+
+                if rojas > max_rojas:
+                    max_rojas = rojas
+                    selecciones_mas_rojas = [seleccion]
+                elif rojas == max_rojas:
+                    selecciones_mas_rojas.append(seleccion)
+
+        resultado_texto.insert(tk.END, "SELECCIÓN(ES) CON MÁS TARJETAS ROJAS\n")
+
+        for seleccion in selecciones_mas_rojas:
+            resultado_texto.insert(tk.END,
+                seleccion.get_pais().get_nombre() +
+                " | Rojas: " + str(max_rojas) + "\n")
+
+        resultado_texto.insert(tk.END, "\n")
+                    
         resultado_texto.insert(tk.END, "RANKING DE GOLEADORES\n\n")
 
         jugadores = []
@@ -241,3 +305,7 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
 
     tk.Button(ventana, text="🔙 Volver al menú", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
         command=mostrar_menu).pack(pady=5, fill="x", padx=40)
+    
+
+"""
+mostrar seleccion ocn mas goles"""
