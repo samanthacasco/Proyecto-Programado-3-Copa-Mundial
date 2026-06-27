@@ -211,9 +211,16 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
                 seleccion.get_pais().get_nombre() +
                 " | Amarillas: " + str(seleccion.get_total_tarjetas_amarillas()) +
                 " | Rojas: " + str(seleccion.get_total_tarjetas_rojas()) + "\n")
+        
         resultado_texto.config(state="disabled")
-    tk.Button(ventana, text="Mostrar estadísticas", font=FUENTE_BOTON, bg=FONDO_CARD,fg=TEXTO_BLANCO,
-        command=mostrar_datos).pack(pady=5, fill="x", padx=40)
+
+        # Desactiva el botón para que no vuelva a ejecutarse
+        btn_mostrar.config(state="disabled")
+
+    # Guardar boton en una variable 
+    btn_mostrar = tk.Button(ventana, text="Mostrar estadísticas", font=FUENTE_BOTON, bg=FONDO_CARD,fg=TEXTO_BLANCO,
+    command=mostrar_datos)
+    btn_mostrar.pack(pady=5, fill="x", padx=40)
 
     tk.Button(ventana, text="🔙 Volver al menú", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL,
         command=mostrar_menu).pack(pady=5, fill="x", padx=40)
