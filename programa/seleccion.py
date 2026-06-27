@@ -19,6 +19,7 @@ class Seleccion:
         self.__total_tarjetas_amarillas = 0
         self.__total_tarjetas_rojas = 0
         self.__fuerza_equipo = 0
+        self.__fase_alcanzada = "Fase de grupos"
     
     def mostrar_datos(self):
         """
@@ -194,3 +195,22 @@ class Seleccion:
         #R: El atributo __total_tarjetas_rojas debe estar inicializado
         """
         return self.__total_tarjetas_rojas
+    
+    def actualizar_fase_alcanzada(self, fase):
+        """
+        Actualiza la fase alcanzada por la selección.
+        #E: fase (str)
+        #S: No retorna nada, cambia la fase alcanzada
+        #R: fase debe ser un texto válido
+        """
+        self.__fase_alcanzada = fase
+
+
+    def get_fase_alcanzada(self):
+        """
+        Retorna la fase alcanzada por la selección.
+        #E: No recibe parámetros
+        #S: Retorna un str con la fase alcanzada
+        #R: El atributo __fase_alcanzada debe estar inicializado
+        """
+        return self.__fase_alcanzada
