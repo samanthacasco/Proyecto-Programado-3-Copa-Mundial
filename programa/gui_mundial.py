@@ -440,7 +440,7 @@ def mostrar_ventana_tabla_general(ventana, mundial, mostrar_menu):
         # Crear cada columna de la fila
         for columna in range(len(datos)):
             ancho = 15
-            if columna == 16:
+            if columna == 6:
                 ancho = 22
             tk.Label( frame_tabla, text=datos[columna], font=("Arial", 10), bg=FONDO_OSCURO, fg=TEXTO_BLANCO, width=ancho, relief="solid", borderwidth=1 ).grid(row=posicion, column=columna)
 
