@@ -367,7 +367,7 @@ def mostrar_ventana_tabla_general(mundial):
     ventana_tabla = tk.Toplevel()
     ventana_tabla.title("Tabla General de Selecciones")
     ventana_tabla.configure(bg=FONDO_OSCURO)
-    ventana_tabla.geometry("850x650")
+    ventana_tabla.geometry("1000x650")
 
     # Título de la ventana
     tk.Label( ventana_tabla, text="TABLA GENERAL DE SELECCIONES", font=FUENTE_TITULO, bg=FONDO_OSCURO, fg=DORADO ).pack(pady=15)
@@ -377,11 +377,14 @@ def mostrar_ventana_tabla_general(mundial):
     frame_tabla.pack(padx=20, pady=10)
 
     # Encabezados de la tabla
-    encabezados = ["#", "Selección", "Pts", "GF", "GC", "DG"]
+    encabezados = ["#", "Selección", "Pts", "GF", "GC", "DG", "Fase"]
 
     # Crear la fila de encabezados
     for columna in range(len(encabezados)):
-        tk.Label(frame_tabla, text=encabezados[columna], font=("Arial", 11, "bold"), bg=FONDO2, fg=TEXTO_BLANCO, width=15, relief="solid", borderwidth=1 ).grid(row=0, column=columna)
+        ancho = 15
+        if columna == 6:
+            ancho = 22
+        tk.Label(frame_tabla, text=encabezados[columna], font=("Arial", 11, "bold"), bg=FONDO2, fg=TEXTO_BLANCO, width=ancho, relief="solid", borderwidth=1 ).grid(row=0, column=columna)
 
     # Lista donde se guardará la tabla completa
     tabla_general = []
@@ -427,11 +430,14 @@ def mostrar_ventana_tabla_general(mundial):
         diferencia = fila[4]
 
         # Datos que se mostrarán en la fila
-        datos = [posicion, seleccion.get_pais().get_nombre(), puntos, goles_favor, goles_contra, diferencia ]
+        datos = [posicion, seleccion.get_pais().get_nombre(), puntos, goles_favor, goles_contra, diferencia, seleccion.get_fase_alcanzada()]
 
         # Crear cada columna de la fila
         for columna in range(len(datos)):
-            tk.Label( frame_tabla, text=datos[columna], font=("Arial", 10), bg=FONDO_OSCURO, fg=TEXTO_BLANCO, width=15, relief="solid", borderwidth=1 ).grid(row=posicion, column=columna)
+            ancho = 15
+            if columna == 16:
+                ancho = 22
+            tk.Label( frame_tabla, text=datos[columna], font=("Arial", 10), bg=FONDO_OSCURO, fg=TEXTO_BLANCO, width=ancho, relief="solid", borderwidth=1 ).grid(row=posicion, column=columna)
 
         # Aumentar el número de posición para la siguiente selección
         posicion += 1
