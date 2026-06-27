@@ -4,8 +4,10 @@ from utilidades import limpiar_ventana
 from seleccion import Seleccion
 from tkinter import ttk
    
+# Colores
 FONDO_OSCURO = "#0a1628"
 FONDO_CARD = "#0d2137"
+FONDO2 = "#4384b6"
 DORADO = "#f1c40f"
 TEXTO_BLANCO = "#ffffff"
 TEXTO_AZUL = "#7fb3d3"
@@ -249,7 +251,7 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
     # Titulo de la ventana
     tk.Label(ventana,text="📊 Estadísticas / Rankings", font=FUENTE_TITULO, bg=FONDO_OSCURO, fg=DORADO).pack(pady=10)
 
-    # Frame principal donde estara el texto y la tabla
+    # Frame principal donde estara el resumen y estadisticas
     frame_contenido = tk.Frame(ventana, bg=FONDO_OSCURO)
     frame_contenido.pack(fill="both", expand=True, padx=20, pady=5)
 
@@ -257,41 +259,12 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
     resultado_texto = tk.Text(frame_contenido,width=70, height=16, bg=FONDO_CARD, fg=TEXTO_BLANCO, font=("Arial", 10), state="disabled")
     resultado_texto.pack(pady=5)
 
-    # Framepara la tabla de posiciones
-    frame_tabla = tk.Frame(frame_contenido, bg=FONDO_OSCURO)
-    frame_tabla.pack(fill="both", expand=True, pady=5)
-
-
-    tk.Label(frame_tabla, text="TABLA GENERAL DE SELECCIONES", font=FUENTE_BOTON, bg=FONDO_OSCURO, fg=DORADO).pack(pady=5)
-
-    # Crear tabla
-    tabla_selecciones = ttk.Treeview(frame_tabla, columns=("seleccion", "pts", "gf", "gc", "dg"), show="headings", height=8)
-
-    # Encabezados
-    tabla_selecciones.heading("seleccion", text="Selección")
-    tabla_selecciones.heading("pts", text="Pts")
-    tabla_selecciones.heading("gf", text="GF")
-    tabla_selecciones.heading("gc", text="GC")
-    tabla_selecciones.heading("dg", text="DG")
-
-    # Tamañao de las columnas
-    tabla_selecciones.column("seleccion", width=180)
-    tabla_selecciones.column("pts", width=50, anchor="center")
-    tabla_selecciones.column("gf", width=50, anchor="center")
-    tabla_selecciones.column("gc", width=50, anchor="center")
-    tabla_selecciones.column("dg", width=50, anchor="center")
-
-    tabla_selecciones.pack(pady=5)
-
     def mostrar_datos():
 
         # Habilitar cuandro de texto para escibir
         resultado_texto.config(state="normal")
         resultado_texto.delete("1.0", tk.END)
 
-        # Vaciar la tabla por si ya tenia datos
-        for item in tabla_selecciones.get_children():
-            tabla_selecciones.delete(item)
 
         # Mostrar el campeor si ya existe
         if mundial.get_campeon() is not None:
@@ -358,86 +331,307 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
         for seleccion in selecciones_mas_rojas:
             resultado_texto.insert(tk.END, seleccion.get_pais().get_nombre() +
                 " | Rojas: " + str(max_rojas) + "\n")
-
-        resultado_texto.insert(tk.END, "\nRANKING DE GOLEADORES\n\n")
-
-        # Guardar todos los jugadores junto con su seleccion
-        jugadores = []
-        for seleccion in mundial.get_selecciones():
-            for jugador in seleccion.get_jugadores():
-                jugadores.append([jugador, seleccion])
-
-        # Ordenar por cantidad de goles
-        for i in range(len(jugadores)):
-            for j in range(len(jugadores) - 1):
-                if jugadores[j][0].get_goles() < jugadores[j + 1][0].get_goles():
-                    jugadores[j], jugadores[j + 1] = jugadores[j + 1], jugadores[j]
-
-        # Mostrar unicamente a quienes anotaron al menos un gol
-        for dato in jugadores:
-            jugador = dato[0]
-            seleccion = dato[1]
-
-            if jugador.get_goles() > 0:
-                resultado_texto.insert(
-                    tk.END,
-                    jugador.get_nombre() + " " + jugador.get_apellido() +
-                    " | " + seleccion.get_pais().get_nombre() +
-                    " | Goles: " + str(jugador.get_goles()) + "\n")
-                
-        # TARJETAS POR SELECCIÓN
-
-        resultado_texto.insert(tk.END, "\nTARJETAS POR SELECCIÓN\n\n")
-
-        for seleccion in mundial.get_selecciones():
-            resultado_texto.insert(tk.END, seleccion.get_pais().get_nombre() +
-                " | Amarillas: " + str(seleccion.get_total_tarjetas_amarillas()) +
-                " | Rojas: " + str(seleccion.get_total_tarjetas_rojas()) + "\n")
             
-        # TABLA GENERAL DE SELECCIONES
-
-        tabla_general = []
-
-        # Recorre todos los grupos y guarda sus tablas en una sola lista
-        for grupo in mundial.get_grupos():
-            tabla = grupo.calcular_tabla()
-
-            for fila in tabla:
-                tabla_general.append(fila)
-
-         # Ordenar tabla general:
-        # 1. puntos
-        # 2. diferencia de goles
-        # 3. goles a favor
-        for i in range(len(tabla_general)):
-            for j in range(len(tabla_general) - 1):
-                if tabla_general[j][1] < tabla_general[j + 1][1]:
-                    tabla_general[j], tabla_general[j + 1] = tabla_general[j + 1], tabla_general[j]
-                elif tabla_general[j][1] == tabla_general[j + 1][1]:
-                    if tabla_general[j][4] < tabla_general[j + 1][4]:
-                        tabla_general[j], tabla_general[j + 1] = tabla_general[j + 1], tabla_general[j]
-                    elif tabla_general[j][4] == tabla_general[j + 1][4]:
-                        if tabla_general[j][2] < tabla_general[j + 1][2]:
-                            tabla_general[j], tabla_general[j + 1] = tabla_general[j + 1], tabla_general[j]
-
-        # Insertar datos ordenados en la tabla visual
-        for fila in tabla_general:
-            seleccion = fila[0]
-            puntos = fila[1]
-            goles_favor = fila[2]
-            goles_contra = fila[3]
-            diferencia = fila[4]
-
-            tabla_selecciones.insert("", tk.END, values=( seleccion.get_pais().get_nombre(), puntos, goles_favor, goles_contra, diferencia))
 
         # Bloquear el cuadro de texto para que el usuario no lo edite
         resultado_texto.config(state="disabled")
         # Desactivar el botón después de mostrar estadísticas
         btn_mostrar.config(state="disabled")
 
-    # Botón para mostrar las estadísticas
-    btn_mostrar = tk.Button(ventana, text="Mostrar estadísticas", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO, command=mostrar_datos)
+  
+    btn_mostrar = tk.Button(ventana, text="Mostrar Resumen", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO, command=mostrar_datos)
     btn_mostrar.pack(pady=5, fill="x", padx=40)
 
+    tk.Button( ventana, text="Ver ranking de goleadores", font=FUENTE_BOTON, bg=FONDO_CARD,  fg=TEXTO_BLANCO,
+        command=lambda: mostrar_ventana_ranking_goleadores(mundial)).pack(pady=5, fill="x", padx=40)
+
+    tk.Button( ventana, text="Ver tarjetas por selección",font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
+        command=lambda: mostrar_ventana_tarjetas_seleccion(mundial)).pack(pady=5, fill="x", padx=40)
+
+    tk.Button(ventana,text="Ver tabla general", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
+        command=lambda: mostrar_ventana_tabla_general(mundial)).pack(pady=5, fill="x", padx=40)
+    
     # Botón para regresar al menú principal
-    tk.Button( ventana, text="🔙 Volver al menú", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL, command=mostrar_menu).pack(pady=5, fill="x", padx=40)
+    tk.Button( ventana, text="🔙 Volver al menú", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_AZUL, 
+        command=mostrar_menu).pack(pady=5, fill="x", padx=40)
+
+def mostrar_ventana_tabla_general(mundial):
+    """
+    Muestra una ventana con la tabla general de selecciones.
+    #E: mundial (Mundial)
+    #S: No retorna nada, muestra la tabla general ordenada
+    #R: El mundial debe tener grupos creados y jugados
+    """
+
+    # Crear una ventana independiente
+    ventana_tabla = tk.Toplevel()
+    ventana_tabla.title("Tabla General de Selecciones")
+    ventana_tabla.configure(bg=FONDO_OSCURO)
+    ventana_tabla.geometry("850x650")
+
+    # Título de la ventana
+    tk.Label( ventana_tabla, text="TABLA GENERAL DE SELECCIONES", font=FUENTE_TITULO, bg=FONDO_OSCURO, fg=DORADO ).pack(pady=15)
+
+    # Frame donde se dibujará la tabla
+    frame_tabla = tk.Frame(ventana_tabla, bg=FONDO_OSCURO)
+    frame_tabla.pack(padx=20, pady=10)
+
+    # Encabezados de la tabla
+    encabezados = ["#", "Selección", "Pts", "GF", "GC", "DG"]
+
+    # Crear la fila de encabezados
+    for columna in range(len(encabezados)):
+        tk.Label(frame_tabla, text=encabezados[columna], font=("Arial", 11, "bold"), bg=FONDO2, fg=TEXTO_BLANCO, width=15, relief="solid", borderwidth=1 ).grid(row=0, column=columna)
+
+    # Lista donde se guardará la tabla completa
+    tabla_general = []
+
+    # Recorrer cada grupo y agregar su tabla a la tabla general
+    for grupo in mundial.get_grupos():
+
+        tabla = grupo.calcular_tabla()
+
+        for fila in tabla:
+            tabla_general.append(fila)
+
+    # Ordenar la tabla por:
+    # 1. Puntos
+    # 2. Diferencia de goles
+    # 3. Goles a favor
+    for i in range(len(tabla_general)):
+        for j in range(len(tabla_general) - 1):
+
+            if tabla_general[j][1] < tabla_general[j + 1][1]:
+                tabla_general[j], tabla_general[j + 1] = tabla_general[j + 1], tabla_general[j]
+
+            elif tabla_general[j][1] == tabla_general[j + 1][1]:
+
+                if tabla_general[j][4] < tabla_general[j + 1][4]:
+                    tabla_general[j], tabla_general[j + 1] = tabla_general[j + 1], tabla_general[j]
+
+                elif tabla_general[j][4] == tabla_general[j + 1][4]:
+
+                    if tabla_general[j][2] < tabla_general[j + 1][2]:
+                        tabla_general[j], tabla_general[j + 1] = tabla_general[j + 1], tabla_general[j]
+
+    # Número de posición que aparecerá en la primera columna
+    posicion = 1
+
+    # Mostrar cada selección en una fila de la tabla
+    for fila in tabla_general:
+
+        seleccion = fila[0]
+        puntos = fila[1]
+        goles_favor = fila[2]
+        goles_contra = fila[3]
+        diferencia = fila[4]
+
+        # Datos que se mostrarán en la fila
+        datos = [posicion, seleccion.get_pais().get_nombre(), puntos, goles_favor, goles_contra, diferencia ]
+
+        # Crear cada columna de la fila
+        for columna in range(len(datos)):
+            tk.Label( frame_tabla, text=datos[columna], font=("Arial", 10), bg=FONDO_OSCURO, fg=TEXTO_BLANCO, width=15, relief="solid", borderwidth=1 ).grid(row=posicion, column=columna)
+
+        # Aumentar el número de posición para la siguiente selección
+        posicion += 1
+
+    # Botón para cerrar la ventana
+    tk.Button(ventana_tabla, text="Cerrar",  font=FUENTE_BOTON,  bg=FONDO_CARD,  fg=TEXTO_BLANCO, command=ventana_tabla.destroy ).pack(pady=15)
+
+def mostrar_ventana_ranking_goleadores(mundial):
+    """
+    Muestra una ventana con el ranking de goleadores.
+    #E: mundial (Mundial)
+    #S: No retorna nada, muestra el ranking de goleadores
+    #R: El mundial debe haberse jugado previamente
+    """
+
+    # Crear una nueva ventana independiente
+    ventana_ranking = tk.Toplevel()
+    ventana_ranking.title("Ranking de Goleadores")
+    ventana_ranking.configure(bg=FONDO_OSCURO)
+    ventana_ranking.geometry("750x600")
+
+    # Título de la ventana
+    tk.Label(ventana_ranking, text="RANKING DE GOLEADORES", font=FUENTE_TITULO, bg=FONDO_OSCURO, fg=DORADO).pack(pady=15)
+
+   # Canvas y barra de desplazamiento
+    canvas = tk.Canvas( ventana_ranking, bg=FONDO_OSCURO, highlightthickness=0)
+    canvas.pack(side="left", fill="both", expand=True)
+
+    scroll = tk.Scrollbar( ventana_ranking, orient="vertical", command=canvas.yview)
+    scroll.pack(side="right", fill="y")
+
+    canvas.configure(yscrollcommand=scroll.set)
+
+    # Frame donde se dibujará la tabla
+    frame_tabla = tk.Frame(canvas, bg=FONDO_OSCURO)
+
+    canvas.create_window((0, 0), window=frame_tabla, anchor="nw")
+
+    # Actualizar el área desplazable cuando cambie el contenido
+    frame_tabla.bind( "<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")) )
+    # Encabezados de la tabla
+    encabezados = ["#", "Jugador", "Selección", "Goles"]
+
+    # Crear la fila de encabezados
+    for columna in range(len(encabezados)):
+        tk.Label( frame_tabla, text=encabezados[columna], font=("Arial", 11, "bold"), bg=FONDO2,  fg=TEXTO_BLANCO, width=18, relief="solid", borderwidth=1).grid(row=0, column=columna)
+
+    # Lista donde se almacenarán todos los jugadores junto con su selección
+    jugadores = []
+
+    # Recorrer todas las selecciones y guardar sus jugadores
+    for seleccion in mundial.get_selecciones():
+        for jugador in seleccion.get_jugadores():
+            jugadores.append([jugador, seleccion])
+
+    # Ordenar los jugadores de mayor a menor cantidad de goles
+    for i in range(len(jugadores)):
+        for j in range(len(jugadores) - 1):
+
+            if jugadores[j][0].get_goles() < jugadores[j + 1][0].get_goles():
+                jugadores[j], jugadores[j + 1] = jugadores[j + 1], jugadores[j]
+
+    # Posición que ocupará cada jugador en el ranking
+    posicion = 1
+
+    # Mostrar únicamente los jugadores que anotaron al menos un gol
+    for dato in jugadores:
+
+        jugador = dato[0]
+        seleccion = dato[1]
+
+        if jugador.get_goles() > 0:
+
+            # Datos que se mostrarán en cada fila
+            datos = [posicion, jugador.get_nombre() + " " + jugador.get_apellido(), seleccion.get_pais().get_nombre(), jugador.get_goles()]
+
+            # Crear las columnas de la fila
+            for columna in range(len(datos)):
+                tk.Label(frame_tabla, text=datos[columna],font=("Arial", 10), bg=FONDO_OSCURO,  fg=TEXTO_BLANCO, width=18, relief="solid", borderwidth=1 ).grid(row=posicion, column=columna)
+
+            # Aumentar la posición para el siguiente jugador
+            posicion += 1
+
+    # Botón para cerrar la ventana
+    tk.Button( ventana_ranking, text="Cerrar", font=FUENTE_BOTON, bg=FONDO_CARD,  fg=TEXTO_BLANCO, command=ventana_ranking.destroy).pack(pady=15)
+
+def mostrar_ventana_tarjetas_seleccion(mundial):
+    """
+    Muestra una ventana con las tarjetas acumuladas por selección.
+    #E: mundial (Mundial)
+    #S: No retorna nada, muestra una tabla con tarjetas amarillas y rojas
+    #R: El mundial debe haberse jugado previamente
+    """
+
+    # Crear una nueva ventana independiente
+    ventana_tarjetas = tk.Toplevel()
+    ventana_tarjetas.title("Tarjetas por Selección")
+    ventana_tarjetas.configure(bg=FONDO_OSCURO)
+    ventana_tarjetas.geometry("750x600")
+
+    # Título de la ventana
+    tk.Label(ventana_tarjetas, text="TARJETAS POR SELECCIÓN", font=FUENTE_TITULO, bg=FONDO_OSCURO, fg=DORADO).pack(pady=15)
+
+    # Frame donde se dibujará la tabla
+    frame_tabla = tk.Frame(ventana_tarjetas, bg=FONDO_OSCURO)
+    frame_tabla.pack(padx=20, pady=10)
+
+    # Encabezados de la tabla
+    encabezados = ["#", "Selección", "Amarillas", "Rojas"]
+
+    # Crear la fila de encabezados
+    for columna in range(len(encabezados)):
+        tk.Label(frame_tabla, text=encabezados[columna], font=("Arial", 11, "bold"), bg=FONDO_CARD, fg=TEXTO_BLANCO,
+            width=18,relief="solid", borderwidth=1 ).grid(row=0, column=columna)
+
+    # Copiar las selecciones para ordenarlas sin modificar la lista original
+    selecciones = mundial.get_selecciones()[:]
+
+    # Ordenar por total de tarjetas, de mayor a menor
+    for i in range(len(selecciones)):
+        for j in range(len(selecciones) - 1):
+            
+            total_actual = (selecciones[j].get_total_tarjetas_amarillas() + selecciones[j].get_total_tarjetas_rojas())
+            total_siguiente = (selecciones[j + 1].get_total_tarjetas_amarillas() + selecciones[j + 1].get_total_tarjetas_rojas() )
+
+            if total_actual < total_siguiente:
+                selecciones[j], selecciones[j + 1] = selecciones[j + 1], selecciones[j]
+                  
+
+    posicion = 1
+
+    # Mostrar cada selección en una fila
+    for seleccion in selecciones:
+        datos = [ posicion, seleccion.get_pais().get_nombre(), seleccion.get_total_tarjetas_amarillas(), seleccion.get_total_tarjetas_rojas()]
+
+        # Crear columnas de la fila
+        for columna in range(len(datos)):
+            tk.Label( frame_tabla, text=datos[columna], font=("Arial", 10), bg=FONDO_OSCURO, fg=TEXTO_BLANCO,
+                width=18, relief="solid", borderwidth=1).grid(row=posicion, column=columna)
+
+        posicion += 1
+
+    # Botón para cerrar la ventana
+    tk.Button( ventana_tarjetas, text="Cerrar", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
+        command=ventana_tarjetas.destroy).pack(pady=15)
+
+def mostrar_ventana_tarjetas_seleccion(mundial):
+    """
+    Muestra una ventana con las tarjetas acumuladas por selección.
+    #E: mundial (Mundial)
+    #S: No retorna nada, muestra una tabla con tarjetas amarillas y rojas
+    #R: El mundial debe haberse jugado previamente
+    """
+
+    # Crear una nueva ventana independiente
+    ventana_tarjetas = tk.Toplevel()
+    ventana_tarjetas.title("Tarjetas por Selección")
+    ventana_tarjetas.configure(bg=FONDO_OSCURO)
+    ventana_tarjetas.geometry("750x600")
+
+    # Título de la ventana
+    tk.Label(ventana_tarjetas, text="TARJETAS POR SELECCIÓN", font=FUENTE_TITULO, bg=FONDO_OSCURO,  fg=DORADO).pack(pady=15)
+
+    # Frame donde se dibujará la tabla
+    frame_tabla = tk.Frame(ventana_tarjetas, bg=FONDO_OSCURO)
+    frame_tabla.pack(padx=20, pady=10)
+
+    # Encabezados de la tabla
+    encabezados = ["#", "Selección", "Amarillas", "Rojas"]
+
+    # Crear la fila de encabezados
+    for columna in range(len(encabezados)):
+        tk.Label(frame_tabla, text=encabezados[columna], font=("Arial", 11, "bold"), bg=FONDO2, fg=TEXTO_BLANCO, width=18, relief="solid",borderwidth=1).grid(row=0, column=columna)
+
+    # Copiar las selecciones para ordenarlas sin modificar la lista original
+    selecciones = mundial.get_selecciones()[:]
+
+    # Ordenar por total de tarjetas, de mayor a menor
+    for i in range(len(selecciones)):
+        for j in range(len(selecciones) - 1):
+            
+            total_actual = (selecciones[j].get_total_tarjetas_amarillas() + selecciones[j].get_total_tarjetas_rojas())
+            total_siguiente = (selecciones[j + 1].get_total_tarjetas_amarillas() + selecciones[j + 1].get_total_tarjetas_rojas())
+
+            if total_actual < total_siguiente:
+                selecciones[j], selecciones[j + 1] = selecciones[j + 1], selecciones[j]
+
+    posicion = 1
+
+    # Mostrar cada selección en una fila
+    for seleccion in selecciones:
+        datos = [posicion, seleccion.get_pais().get_nombre(), seleccion.get_total_tarjetas_amarillas(), seleccion.get_total_tarjetas_rojas()]
+
+        # Crear columnas de la fila
+        for columna in range(len(datos)):
+            tk.Label(frame_tabla, text=datos[columna], font=("Arial", 10), bg=FONDO_OSCURO, fg=TEXTO_BLANCO, width=18, relief="solid", borderwidth=1).grid(row=posicion, column=columna)
+
+        posicion += 1
+
+    # Botón para cerrar la ventana
+    tk.Button(ventana_tarjetas, text="Cerrar", font=FUENTE_BOTON, bg=FONDO_CARD, fg=TEXTO_BLANCO,
+        command=ventana_tarjetas.destroy).pack(pady=15)
+
