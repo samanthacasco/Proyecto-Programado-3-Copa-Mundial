@@ -29,7 +29,11 @@ class Seleccion:
         #R: El objeto debe estar correctamente inicializado
         """
         info_pais = self.__pais.mostrar_datos()
-        info_entrenador = self.__entrenador.mostrar_datos()
+        if self.__entrenador is not None:
+            info_entrenador = self.__entrenador.mostrar_datos()
+        else:
+            info_entrenador = "Sin entrenador asignado"
+            
         info_jugadores = ""
         
         for jugador in self.__jugadores:
