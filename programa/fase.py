@@ -13,6 +13,7 @@ class Fase:
         self.__partidos = [ ]
         self.__clasificados = [ ]
         self.__resultados_penales = [ ]
+        self.__eliminados = [ ]
 
     def registrar_juego(self, equipo1, equipo2):
         """
@@ -34,7 +35,9 @@ class Fase:
         #R: Los partidos deben estar registrados previamente en la fase
         """
         self.__clasificados = []
+        self.__eliminados = []
         self.__resultados_penales = []
+        
         for partido in self.__partidos:
             partido.simular()
 
@@ -51,12 +54,17 @@ class Fase:
                 # Si gana equipo 1
                 if penales_equipo1 > penales_equipo2:
                     self.__clasificados.append(partido.get_equipo_1())
+                    self.__eliminados.append(partido.get_equipo_2())
                 else:
                     self.__clasificados.append(partido.get_equipo_2())
+                    self.__eliminados.append(partido.get_equipo_1())
                 self.__resultados_penales.append([partido, penales_equipo1, penales_equipo2])
             else:
                 self.__clasificados.append(ganador)
-
+                if ganador == partido.get_equipo_1():
+                    self.__eliminados.append(partido.get_equipo_2())
+                else:
+                    self.__eliminados.append(partido.get_equipo_1())
 
     def obtener_clasificados(self):
         """
@@ -131,4 +139,14 @@ class Fase:
         """
         return self.__resultados_penales
     
+    def get_eliminados(self):
+        """
+        Retorna las selecciones eliminadas de la fase.
+        #E: No recibe parámetros
+        #S: Retorna una lista con las selecciones eliminadas
+        #R: La fase debe haberse jugado previamente para contener eliminados
+        """
+        return self.__eliminados
     
+
+        
