@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import messagebox
 from utilidades import limpiar_ventana
 from seleccion import Seleccion
-from tkinter import ttk
    
 # Colores
 FONDO_OSCURO = "#0a1628"
@@ -260,7 +259,13 @@ def mostrar_estadisticas(ventana, mundial, mostrar_menu):
     resultado_texto.pack(pady=5)
 
     def mostrar_datos():
-
+        """
+        Muestra el resumen de estadísticas del mundial incluyendo campeón,
+        selección con más goles y selecciones con más tarjetas.
+        #E: No recibe parámetros, lee los datos del objeto mundial
+        #S: No retorna nada, escribe los resultados en el cuadro de texto
+        #R: El mundial debe haberse jugado previamente para tener datos
+        """
         # Habilitar cuandro de texto para escibir
         resultado_texto.config(state="normal")
         resultado_texto.delete("1.0", tk.END)
