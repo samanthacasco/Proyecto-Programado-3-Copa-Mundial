@@ -58,8 +58,8 @@ def mostrar_configurar_mundial(ventana, lista_selecciones, mundial, mostrar_menu
             messagebox.showerror("Error", "La cantidad de selecciones debe ser igual a grupos x 4")
             return
         for seleccion in lista_selecciones:
-            if len(seleccion.get_jugadores()) == 0:
-                messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} no tiene jugadores registrados")
+            if len(seleccion.get_jugadores()) < 11:
+                messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} debe tener al menos 11 jugadores")
                 return
             if seleccion.get_entrenador() is None:
                 messagebox.showerror("Error", f"La selección {seleccion.get_pais().get_nombre()} no tiene entrenador asignado")
