@@ -61,23 +61,37 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
         #S: No retorna nada, agrega el objeto Pais a lista_paises y actualiza el listbox
         #R: La ventana debe estar inicializada correctamente
         """
-        codigo = entry_codigo.get()
-        nombre = entry_nombre.get()
-        continente = entry_continente.get()
+        codigo = entry_codigo.get().upper()
+        nombre = entry_nombre.get().upper()
+        continente = entry_continente.get().upper()
         ranking = entry_ranking.get()
         
         if codigo == "" or nombre == "" or continente == "" or ranking == "":
             messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+
+        nombre_sin_espacios = nombre.replace(" ", "")
+        if not nombre_sin_espacios.isalpha():
+            messagebox.showerror("Error", "El nombre del país debe contener solo letras")
+            return
+
+        continente_sin_espacios = continente.replace(" ", "")
+        if not continente_sin_espacios.isalpha():
+            messagebox.showerror("Error", "El continente debe contener solo letras")
+            return
+
+        if not len(codigo) == 3:
+            messagebox.showerror("Error", "El código FIFA debe tener exactamente 3 letras")
+            return
+
+        if not codigo.isalpha():
+            messagebox.showerror("Error", "El código FIFA debe contener solo letras")
             return
         
         for pais in lista_paises:
             if pais.get_codigo_fifa() == codigo:
                 messagebox.showerror("Error", f"Ya existe un país con el código {codigo}")
                 return
-        
-        if not len(codigo) == 3:
-            messagebox.showerror("Error", "El código FIFA debe tener exactamente 3 letras")
-            return
 
         if not ranking.isdigit():
             messagebox.showerror("Error", "El ranking debe ser un número entero positivo")
@@ -87,6 +101,11 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
         if ranking_num <= 0:
             messagebox.showerror("Error", "El ranking debe ser mayor a 0")
             return
+
+        for pais in lista_paises:
+            if pais.get_ranking_fifa() == ranking_num:
+                messagebox.showerror("Error", f"Ya existe un país con el ranking {ranking_num}")
+                return
 
         nuevo_pais = Pais(codigo, nombre, continente, ranking_num)
         lista_paises.append(nuevo_pais)
@@ -153,9 +172,9 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
         indice = indice_seleccionado[0]
         pais = lista_paises[indice]
 
-        codigo = entry_codigo.get()
-        nombre = entry_nombre.get()
-        continente = entry_continente.get()
+        codigo = entry_codigo.get().upper()
+        nombre = entry_nombre.get().upper()
+        continente = entry_continente.get().upper()
         ranking = entry_ranking.get()
 
         if codigo == "" or nombre == "" or continente == "" or ranking == "":
@@ -172,7 +191,6 @@ def mostrar_paises(ventana, lista_paises, mostrar_menu, lista_selecciones):
             messagebox.showerror("Error", "El ranking debe ser mayor a 0")
             return
 
-        # Validar que el nuevo código no choque con otro país distinto
         for otro_pais in lista_paises:
             if otro_pais != pais and otro_pais.get_codigo_fifa() == codigo:
                 messagebox.showerror("Error", f"Ya existe otro país con el código {codigo}")
@@ -298,7 +316,7 @@ def mostrar_selecciones(ventana, lista_paises, lista_selecciones, mostrar_menu):
         #S: No retorna nada, agrega el objeto Seleccion a lista_selecciones y actualiza el listbox
         #R: La ventana debe estar inicializada correctamente
         """
-        codigo = entry_codigo_equipo.get()
+        codigo = entry_codigo_equipo.get().upper()
         seleccion = listbox_paises.curselection()
         
         if codigo == "":
@@ -483,10 +501,10 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
         #S: No retorna nada, agrega el objeto Entrenador a lista_entrenadores y actualiza el listbox
         #R: La ventana debe estar inicializada correctamente
         """
-        nombre = entry_nombre_entrenador.get()
-        apellido = entry_apellido_entrenador.get()
+        nombre = entry_nombre_entrenador.get().upper()
+        apellido = entry_apellido_entrenador.get().upper()
         fecha_nacimiento = entry_fecha_naci_entrenador.get()
-        nacionalidad = entry_nacionalidad_entrenador.get()
+        nacionalidad = entry_nacionalidad_entrenador.get().upper()
         licencia = entry_licencia_entrenador.get()
         anios_exp = entry_anios_exp_entrenador.get()
         sistema_juego = entry_sistema_juego_entrenador.get()
@@ -495,6 +513,14 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
         if nombre == "" or apellido == "" or fecha_nacimiento == "" or nacionalidad == "" or licencia == "" or anios_exp == "" or sistema_juego == "":
             messagebox.showerror("Error", "Todos los campos son obligatorios")
             return
+
+        for sel in lista_selecciones:
+            if sel.get_entrenador() is not None:
+                e = sel.get_entrenador()
+                if e.get_nombre().upper() == nombre and e.get_apellido().upper() == apellido:
+                    messagebox.showerror("Error", f"Ya existe un entrenador llamado {nombre} {apellido}")
+                    return
+
         if not validar_fecha(fecha_nacimiento):
             messagebox.showerror("Error", "La fecha debe tener el formato DD/MM/AAAA")
             return
@@ -558,7 +584,6 @@ def mostrar_entrenador(ventana, lista_entrenadores, lista_jugadores, lista_selec
 
         indice = seleccion_listbox[0]
         texto = listbox_entrenadores.get(indice)
-        # formato: "Nombre Apellido - CODIGO"
         codigo_sel = texto.split(" - ")[1]
 
         entrenador = None
@@ -708,7 +733,8 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
                                     insertbackground=TEXTO_BLANCO, font=FUENTE_BOTON)
     entry_dorsal_jugador.pack()
 
-    tk.Label(frame, text="Posicion:", bg=FONDO_OSCURO, fg=TEXTO_BLANCO, font=FUENTE_LABEL).pack()
+    tk.Label(frame, text="Posicion (Portero/Defensa/Mediocampista/Delantero):",
+             bg=FONDO_OSCURO, fg=TEXTO_BLANCO, font=FUENTE_LABEL).pack()
     entry_posicion_jugador = tk.Entry(frame, bg=FONDO_CARD, fg=TEXTO_BLANCO,
                                       insertbackground=TEXTO_BLANCO, font=FUENTE_BOTON)
     entry_posicion_jugador.pack()
@@ -734,12 +760,12 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         #S: No retorna nada, agrega el objeto Futbolista a lista_jugadores y actualiza el listbox
         #R: La ventana debe estar inicializada correctamente
         """
-        nombre = entry_nombre_jugador.get()
-        apellido = entry_apellido_jugador.get()
+        nombre = entry_nombre_jugador.get().upper()
+        apellido = entry_apellido_jugador.get().upper()
         fecha_nacimiento = entry_fecha_naci_jugador.get()
-        nacionalidad = entry_nacionalidad_jugador.get()
+        nacionalidad = entry_nacionalidad_jugador.get().upper()
         dorsal = entry_dorsal_jugador.get()
-        posicion = entry_posicion_jugador.get()
+        posicion = entry_posicion_jugador.get().upper()
         puntaje = entry_puntaje_jugador.get()
         seleccion = listbox_seleccion.curselection()
 
@@ -749,6 +775,12 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         if not validar_fecha(fecha_nacimiento):
             messagebox.showerror("Error", "La fecha debe tener el formato DD/MM/AAAA")
             return
+
+        posiciones_validas = ["PORTERO", "DEFENSA", "MEDIOCAMPISTA", "DELANTERO"]
+        if posicion not in posiciones_validas:
+            messagebox.showerror("Error", "La posición debe ser: Portero, Defensa, Mediocampista o Delantero")
+            return
+
         if not dorsal.isdigit():
             messagebox.showerror("Error", "El dorsal debe ser un número entero positivo")
             return
@@ -867,7 +899,7 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         jugador = jugador_seleccionado[0]
 
         dorsal = entry_dorsal_jugador.get()
-        posicion = entry_posicion_jugador.get()
+        posicion = entry_posicion_jugador.get().upper()
         puntaje = entry_puntaje_jugador.get()
 
         if dorsal == "" or posicion == "" or puntaje == "":
@@ -880,6 +912,12 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         if dorsal_num < 1 or dorsal_num > 99:
             messagebox.showerror("Error", "El dorsal debe ser un número entre 1 y 99")
             return
+
+        posiciones_validas = ["PORTERO", "DEFENSA", "MEDIOCAMPISTA", "DELANTERO"]
+        if posicion not in posiciones_validas:
+            messagebox.showerror("Error", "La posición debe ser: Portero, Defensa, Mediocampista o Delantero")
+            return
+
         if not puntaje.isdigit():
             messagebox.showerror("Error", "El puntaje debe ser un número entero positivo")
             return
@@ -888,7 +926,6 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
             messagebox.showerror("Error", "El puntaje debe ser un número entre 1 y 100")
             return
 
-        # Validar que el nuevo dorsal no choque con otro jugador de la misma selección
         for sel in lista_selecciones:
             if jugador in sel.get_jugadores():
                 for jug in sel.get_jugadores():
@@ -899,7 +936,6 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
         jugador.actualizar_datos(dorsal_num, posicion, puntaje_num)
         guardar_jugadores(lista_selecciones)
 
-        # Refrescar el listbox completo
         listbox_jugadores.delete(0, tk.END)
         for sel in lista_selecciones:
             for jug in sel.get_jugadores():
@@ -931,8 +967,7 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
 
         indice = seleccion_listbox[0]
         texto = listbox_jugadores.get(indice)
-        # formato: "#10 Nombre Apellido - Posicion (CODIGO)"
-        dorsal_str = texto.split(" ")[0][1:]         # quita el '#'
+        dorsal_str = texto.split(" ")[0][1:]
         codigo_sel = texto.split("(")[1].replace(")", "")
 
         if not dorsal_str.isdigit():
@@ -957,7 +992,6 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
 
         seleccion_encontrada.eliminar_jugador(dorsal_num)
 
-        # Reconstruir lista_jugadores desde las selecciones actualizadas
         lista_jugadores.clear()
         for sel in lista_selecciones:
             for j in sel.get_jugadores():
@@ -1001,7 +1035,6 @@ def mostrar_jugador(ventana, lista_entrenadores, lista_jugadores, lista_seleccio
                         activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
                         relief="flat", padx=20, pady=10, cursor="hand2", command=ver_jugadores_registrados)
     btn_ver.pack(pady=5, fill="x", padx=40)
-    
     
     tk.Button(frame, text="🔙 Volver", bg=FONDO_CARD, fg=TEXTO_AZUL,
               activebackground="#1a3a5c", activeforeground=TEXTO_BLANCO,
