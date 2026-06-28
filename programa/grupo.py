@@ -1,4 +1,5 @@
 from partido import Partido
+from datetime import date
 
 class Grupo:
     def __init__(self, nombre_grupo):
@@ -40,7 +41,7 @@ class Grupo:
 
                 id_partido = len(self.__partidos) + 1
 
-                partido = Partido(id_partido, equipo_1, equipo_2, "Fase de grupos", "DD/MM/AAAA" )
+                partido = Partido(id_partido, equipo_1, equipo_2, "Fase de grupos", date.today().strftime("%d/%m/%Y"))
                 partido.simular()
 
                 self.__partidos.append(partido)
