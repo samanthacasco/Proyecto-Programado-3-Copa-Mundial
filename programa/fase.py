@@ -1,5 +1,6 @@
 from partido import Partido 
 import random
+from datetime import date
 
 class Fase:
     def __init__(self, nombre_fase):
@@ -24,7 +25,7 @@ class Fase:
         """
 
         id_partido = len(self.__partidos) + 1
-        partido = Partido(id_partido, equipo1, equipo2, self.__nombre_fase, "DD/MM/AAAA")
+        partido = Partido(id_partido, equipo1, equipo2, self.__nombre_fase, date.today().strftime("%d/%m/%Y"))
         self.__partidos.append(partido)
 
     def jugar_fase(self):
